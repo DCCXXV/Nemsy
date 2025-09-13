@@ -73,8 +73,8 @@ func (h *Handler) CallbackHandler(w http.ResponseWriter, r *http.Request) {
 		Value:    jwtToken,
 		Path:     "/",
 		HttpOnly: true,
-		Secure:   false, // TODO: true en prod con HTTPS
-		SameSite: http.SameSiteNoneMode,
+		Secure:   false,                // TODO: true in prod
+		SameSite: http.SameSiteLaxMode, // TODO: None in prod
 	})
 
 	http.Redirect(w, r, "http://localhost:5173/", http.StatusSeeOther)

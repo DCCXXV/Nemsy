@@ -2,9 +2,7 @@
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
 @plugin "daisyui" {
-	themes:
-		corporate --default,
-		business;
+	themes: cupcake --default;
 }
 @import '@fontsource/inter/400.css';
 
@@ -13,4 +11,9 @@ html {
 	font-optical-sizing: auto;
 	font-weight: 400;
 	font-style: normal;
+}
+
+::selection {
+	background: var(--color-blue-200);
+	color: var(--color-blue-950);
 }
