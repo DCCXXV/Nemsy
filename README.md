@@ -8,8 +8,6 @@ Autor: Marco Antonio Pérez Neira
 
 Universidad Complutense de Madrid – 2025
 
----
-
 ## Licencia
 Este proyecto se distribuye bajo la **Licencia Pública de la Unión Europea v1.2 (EUPL)**.
 Consulta el archivo [`LICENSE`](./LICENSE) para más detalles.
