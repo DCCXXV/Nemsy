@@ -1,19 +1,16 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
-@plugin "daisyui" {
-	themes: cupcake --default;
-}
-@import '@fontsource/inter/400.css';
+@import '@fontsource/lato/400.css';
 
 html {
-	font-family: 'Inter', sans-serif;
+	font-family: 'Lato', sans-serif;
 	font-optical-sizing: auto;
 	font-weight: 400;
 	font-style: normal;
 }
 
 ::selection {
-	background: var(--color-blue-200);
-	color: var(--color-blue-950);
+	background: var(--color-slate-300);
+	color: var(--color-slate-900);
 }
