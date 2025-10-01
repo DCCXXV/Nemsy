@@ -15,8 +15,6 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/go-chi/render"
-	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 )
@@ -68,6 +66,7 @@ func main() {
 		OAuthConfig: auth.GoogleOAuthConfig(),
 		JWTSecret:   secret,
 		StateStore:  store,
+		Queries:     app.Queries,
 	}
 
 	r.Get("/auth/login", authHandler.LoginHandler)
@@ -97,38 +96,14 @@ func main() {
 
 func (a *App) meHandler(w http.ResponseWriter, r *http.Request) {
 	userInfo, ok := r.Context().Value(auth.CtxUserInfo).(auth.UserInfo)
-
 	if !ok || userInfo.Email == "" {
 		render.Status(r, http.StatusUnauthorized)
-		render.JSON(w, r, map[string]string{"error": "user not found in context"})
+		render.JSON(w, r, map[string]string{"error": "unauthorized"})
 		return
 	}
 
 	user, err := a.Queries.GetUserByEmail(r.Context(), userInfo.Email)
 	if err != nil {
-		if err == pgx.ErrNoRows {
-			log.Println("User not found, creating new user:", userInfo.Email)
-
-			newUser, err := a.Queries.CreateUser(r.Context(), db.CreateUserParams{
-				GoogleSub: userInfo.GoogleSub,
-				Email:     userInfo.Email,
-				FullName:  stringToPgText(userInfo.FullName),
-				Pfp:       stringToPgText(userInfo.Picture),
-				Hd:        stringToPgText(userInfo.Hd),
-			})
-
-			if err != nil {
-				log.Println("Error creating user:", err)
-				render.Status(r, http.StatusInternalServerError)
-				render.JSON(w, r, map[string]string{"error": "could not create user"})
-				return
-			}
-
-			render.Status(r, http.StatusCreated)
-			render.JSON(w, r, newUser)
-			return
-		}
-		log.Println("Database error:", err)
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, map[string]string{"error": "database error"})
 		return
@@ -136,14 +111,4 @@ func (a *App) meHandler(w http.ResponseWriter, r *http.Request) {
 
 	render.Status(r, http.StatusOK)
 	render.JSON(w, r, user)
-}
-
-func stringToPgText(s string) pgtype.Text {
-	if s == "" {
-		return pgtype.Text{Valid: false}
-	}
-	return pgtype.Text{
-		String: s,
-		Valid:  true,
-	}
 }

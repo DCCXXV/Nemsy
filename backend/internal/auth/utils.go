@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/jackc/pgx/v5/pgtype"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 )
@@ -73,4 +74,14 @@ func ExtractUserInfo(claims map[string]any) UserInfo {
 	}
 
 	return info
+}
+
+func stringToPgText(s string) pgtype.Text {
+	if s == "" {
+		return pgtype.Text{Valid: false}
+	}
+	return pgtype.Text{
+		String: s,
+		Valid:  true,
+	}
 }

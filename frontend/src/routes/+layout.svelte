@@ -120,7 +120,7 @@
 				<div
 					class="h-10 flex items-center px-4 py-2 bg-zinc-100 text-zinc-900 border-zinc-900 border-2 rounded"
 				>
-					{props.data.me?.email?.split('@')[0]}
+					{props.data.me?.Email?.split('@')[0]}
 				</div>
 			{:else}
 				<button

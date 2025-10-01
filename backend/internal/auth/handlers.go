@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 
+	db "github.com/DCCXXV/Nemsy/backend/internal/db/generated"
+	"github.com/jackc/pgx/v5"
 	"golang.org/x/oauth2"
 	"google.golang.org/api/idtoken"
 )
@@ -13,6 +15,7 @@ type Handler struct {
 	OAuthConfig *oauth2.Config
 	JWTSecret   []byte
 	StateStore  *StateStore
+	Queries     *db.Queries
 }
 
 type UserInfo struct {
@@ -68,6 +71,23 @@ func (h *Handler) CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userInfo := ExtractUserInfo(payload.Claims)
+
+	if _, err = h.Queries.GetUserByEmail(r.Context(), userInfo.Email); err == pgx.ErrNoRows {
+		log.Println("User not found, creating new user:", userInfo.Email)
+		_, err = h.Queries.CreateUser(r.Context(), db.CreateUserParams{
+			GoogleSub: userInfo.GoogleSub,
+			Email:     userInfo.Email,
+			FullName:  stringToPgText(userInfo.FullName),
+			Pfp:       stringToPgText(userInfo.Picture),
+			Hd:        stringToPgText(userInfo.Hd),
+		})
+	}
+
+	if err != nil {
+		log.Println("Database error:", err)
+		http.Error(w, "Could not save user", http.StatusInternalServerError)
+		return
+	}
 
 	log.Printf("Handler using secret: %q", h.JWTSecret)
 	jwtToken, err := GenerateJWT(userInfo, h.JWTSecret)
