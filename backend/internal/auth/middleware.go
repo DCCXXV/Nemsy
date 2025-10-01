@@ -10,7 +10,7 @@ import (
 
 type ctxKey string
 
-const CtxUserEmail ctxKey = "user_email"
+const CtxUserInfo ctxKey = "user_info"
 
 type AuthMiddleware struct {
 	Secret []byte
@@ -52,13 +52,14 @@ func (a *AuthMiddleware) Middleware(next http.Handler) http.Handler {
 
 		if claims, ok := token.Claims.(jwt.MapClaims); ok {
 			log.Printf("AuthMiddleware: claims = %#v\n", claims)
-			if emailVal, ok := claims["email"].(string); ok {
-				log.Println("AuthMiddleware: email claim =", emailVal)
-				ctx := context.WithValue(r.Context(), CtxUserEmail, emailVal)
+			userInfo := ExtractUserInfo(claims)
+			if userInfo.Email != "" {
+				log.Println("AuthMiddleware: user info =", userInfo)
+				ctx := context.WithValue(r.Context(), CtxUserInfo, userInfo)
 				next.ServeHTTP(w, r.WithContext(ctx))
 				return
 			} else {
-				log.Println("AuthMiddleware: email claim missing or not string")
+				log.Println("AuthMiddleware: email claim missing")
 			}
 		} else {
 			log.Println("AuthMiddleware: could not cast claims to MapClaims")

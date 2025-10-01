@@ -15,6 +15,14 @@ type Handler struct {
 	StateStore  *StateStore
 }
 
+type UserInfo struct {
+	GoogleSub string
+	Email     string
+	FullName  string
+	Picture   string
+	Hd        string
+}
+
 func (h *Handler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	state := generateState()
 
@@ -59,10 +67,10 @@ func (h *Handler) CallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	email := payload.Claims["email"].(string)
+	userInfo := ExtractUserInfo(payload.Claims)
 
 	log.Printf("Handler using secret: %q", h.JWTSecret)
-	jwtToken, err := GenerateJWT(email, h.JWTSecret)
+	jwtToken, err := GenerateJWT(userInfo, h.JWTSecret)
 	if err != nil {
 		http.Error(w, "Could not create session token", http.StatusInternalServerError)
 		return
