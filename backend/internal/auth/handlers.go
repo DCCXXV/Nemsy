@@ -7,6 +7,7 @@ import (
 
 	db "github.com/DCCXXV/Nemsy/backend/internal/db/generated"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgtype"
 	"golang.org/x/oauth2"
 	"google.golang.org/api/idtoken"
 )
@@ -27,6 +28,10 @@ type UserInfo struct {
 }
 
 func (h *Handler) LoginHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+	w.Header().Set("Pragma", "no-cache")
+	w.Header().Set("Expires", "0")
+
 	state := generateState()
 
 	h.StateStore.Put(state)
@@ -41,6 +46,10 @@ func (h *Handler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) CallbackHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+	w.Header().Set("Pragma", "no-cache")
+	w.Header().Set("Expires", "0")
+
 	returnedState := r.URL.Query().Get("state")
 	log.Println("Callback state param:", returnedState)
 
@@ -71,16 +80,18 @@ func (h *Handler) CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userInfo := ExtractUserInfo(payload.Claims)
-
+	newUser := false
 	if _, err = h.Queries.GetUserByEmail(r.Context(), userInfo.Email); err == pgx.ErrNoRows {
 		log.Println("User not found, creating new user:", userInfo.Email)
 		_, err = h.Queries.CreateUser(r.Context(), db.CreateUserParams{
 			GoogleSub: userInfo.GoogleSub,
+			StudyID:   pgtype.Int4{Valid: false},
 			Email:     userInfo.Email,
 			FullName:  stringToPgText(userInfo.FullName),
 			Pfp:       stringToPgText(userInfo.Picture),
 			Hd:        stringToPgText(userInfo.Hd),
 		})
+		newUser = true
 	}
 
 	if err != nil {
@@ -104,6 +115,10 @@ func (h *Handler) CallbackHandler(w http.ResponseWriter, r *http.Request) {
 		Secure:   false,                // TODO: true in prod
 		SameSite: http.SameSiteLaxMode, // TODO: None in prod
 	})
-
-	http.Redirect(w, r, "http://localhost:5173/", http.StatusSeeOther)
+	if newUser == true {
+		http.Redirect(w, r, "http://localhost:5173/auth", http.StatusSeeOther)
+	} else {
+		// TODO: remember later that if a user closes mid onboarding he isnt "new" but wont be able to choose studies
+		http.Redirect(w, r, "http://localhost:5173/", http.StatusSeeOther)
+	}
 }

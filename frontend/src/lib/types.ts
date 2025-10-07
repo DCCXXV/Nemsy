@@ -1,5 +1,10 @@
 export interface User {
-	id: string;
-	email: string;
-	name?: string;
+	ID: number;
+	StudyID: number | null;
+	GoogleSub: string;
+	Email: string;
+	FullName: string;
+	Pfp: string;
+	Hd: string;
+	CreatedAt: string;
 }

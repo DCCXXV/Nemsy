@@ -13,15 +13,16 @@ import (
 
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (
-    google_sub, email, full_name, pfp, hd
+    google_sub, study_id, email, full_name, pfp, hd
 ) VALUES (
-    $1, $2, $3, $4, $5
+    $1, $2, $3, $4, $5, $6
 )
-RETURNING id, google_sub, email, full_name, pfp, hd, created_at
+RETURNING id, study_id, google_sub, email, full_name, pfp, hd, created_at
 `
 
 type CreateUserParams struct {
 	GoogleSub string
+	StudyID   pgtype.Int4
 	Email     string
 	FullName  pgtype.Text
 	Pfp       pgtype.Text
@@ -31,6 +32,7 @@ type CreateUserParams struct {
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
 	row := q.db.QueryRow(ctx, createUser,
 		arg.GoogleSub,
+		arg.StudyID,
 		arg.Email,
 		arg.FullName,
 		arg.Pfp,
@@ -39,6 +41,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	var i User
 	err := row.Scan(
 		&i.ID,
+		&i.StudyID,
 		&i.GoogleSub,
 		&i.Email,
 		&i.FullName,
@@ -50,7 +53,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, google_sub, email, full_name, pfp, hd, created_at FROM users
+SELECT id, study_id, google_sub, email, full_name, pfp, hd, created_at FROM users
 WHERE id = $1 LIMIT 1
 `
 
@@ -59,6 +62,7 @@ func (q *Queries) GetUser(ctx context.Context, id int32) (User, error) {
 	var i User
 	err := row.Scan(
 		&i.ID,
+		&i.StudyID,
 		&i.GoogleSub,
 		&i.Email,
 		&i.FullName,
@@ -70,7 +74,7 @@ func (q *Queries) GetUser(ctx context.Context, id int32) (User, error) {
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, google_sub, email, full_name, pfp, hd, created_at FROM users
+SELECT id, study_id, google_sub, email, full_name, pfp, hd, created_at FROM users
 WHERE email = $1 LIMIT 1
 `
 
@@ -79,6 +83,7 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 	var i User
 	err := row.Scan(
 		&i.ID,
+		&i.StudyID,
 		&i.GoogleSub,
 		&i.Email,
 		&i.FullName,

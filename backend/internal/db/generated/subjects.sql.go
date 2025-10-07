@@ -13,33 +13,33 @@ import (
 
 const createSubject = `-- name: CreateSubject :one
 INSERT INTO subjects (
-    name, code, year
+    study_id, name, year
 ) VALUES (
     $1, $2, $3
 )
-RETURNING id, name, code, year
+RETURNING id, study_id, name, year
 `
 
 type CreateSubjectParams struct {
-	Name string
-	Code string
-	Year pgtype.Text
+	StudyID pgtype.Int4
+	Name    string
+	Year    pgtype.Text
 }
 
 func (q *Queries) CreateSubject(ctx context.Context, arg CreateSubjectParams) (Subject, error) {
-	row := q.db.QueryRow(ctx, createSubject, arg.Name, arg.Code, arg.Year)
+	row := q.db.QueryRow(ctx, createSubject, arg.StudyID, arg.Name, arg.Year)
 	var i Subject
 	err := row.Scan(
 		&i.ID,
+		&i.StudyID,
 		&i.Name,
-		&i.Code,
 		&i.Year,
 	)
 	return i, err
 }
 
 const getSubject = `-- name: GetSubject :one
-SELECT id, name, code, year FROM subjects
+SELECT id, study_id, name, year FROM subjects
 WHERE id = $1 LIMIT 1
 `
 
@@ -48,15 +48,15 @@ func (q *Queries) GetSubject(ctx context.Context, id int32) (Subject, error) {
 	var i Subject
 	err := row.Scan(
 		&i.ID,
+		&i.StudyID,
 		&i.Name,
-		&i.Code,
 		&i.Year,
 	)
 	return i, err
 }
 
 const listSubjects = `-- name: ListSubjects :many
-SELECT id, name, code, year FROM subjects
+SELECT id, study_id, name, year FROM subjects
 GROUP BY year
 ORDER BY name
 `
@@ -72,8 +72,8 @@ func (q *Queries) ListSubjects(ctx context.Context) ([]Subject, error) {
 		var i Subject
 		if err := rows.Scan(
 			&i.ID,
+			&i.StudyID,
 			&i.Name,
-			&i.Code,
 			&i.Year,
 		); err != nil {
 			return nil, err

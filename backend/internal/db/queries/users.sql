@@ -8,8 +8,8 @@ WHERE email = $1 LIMIT 1;
 
 -- name: CreateUser :one
 INSERT INTO users (
-    google_sub, email, full_name, pfp, hd
+    google_sub, study_id, email, full_name, pfp, hd
 ) VALUES (
-    $1, $2, $3, $4, $5
+    $1, $2, $3, $4, $5, $6
 )
 RETURNING *;

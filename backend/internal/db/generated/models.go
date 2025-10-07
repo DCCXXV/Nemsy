@@ -19,15 +19,21 @@ type Resource struct {
 	CreatedAt   pgtype.Timestamp
 }
 
-type Subject struct {
+type Study struct {
 	ID   int32
 	Name string
-	Code string
-	Year pgtype.Text
+}
+
+type Subject struct {
+	ID      int32
+	StudyID pgtype.Int4
+	Name    string
+	Year    pgtype.Text
 }
 
 type User struct {
 	ID        int32
+	StudyID   pgtype.Int4
 	GoogleSub string
 	Email     string
 	FullName  pgtype.Text

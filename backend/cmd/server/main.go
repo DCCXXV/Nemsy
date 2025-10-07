@@ -11,6 +11,7 @@ import (
 
 	"github.com/DCCXXV/Nemsy/backend/internal/auth"
 	db "github.com/DCCXXV/Nemsy/backend/internal/db/generated"
+	"github.com/DCCXXV/Nemsy/backend/internal/studies"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
@@ -55,9 +56,10 @@ func main() {
 	r.Use(middleware.Logger)
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:5173"},
-		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
 		AllowCredentials: true,
+		MaxAge:           300,
 	}))
 
 	store := auth.NewStateStore(5 * time.Minute)
@@ -69,6 +71,8 @@ func main() {
 		Queries:     app.Queries,
 	}
 
+	studiesHandler := studies.NewHandler(app.Queries)
+
 	r.Get("/auth/login", authHandler.LoginHandler)
 	r.Get("/auth/callback", authHandler.CallbackHandler)
 
@@ -76,6 +80,7 @@ func main() {
 	r.Group(func(protected chi.Router) {
 		protected.Use(mw.Middleware)
 		protected.Get("/api/me", app.meHandler)
+		protected.Get("/api/studies", studiesHandler.List)
 	})
 
 	srv := &http.Server{Addr: ":8080", Handler: r}

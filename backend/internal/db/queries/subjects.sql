@@ -9,7 +9,7 @@ ORDER BY name;
 
 -- name: CreateSubject :one
 INSERT INTO subjects (
-    name, code, year
+    study_id, name, year
 ) VALUES (
     $1, $2, $3
 )

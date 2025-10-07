@@ -44,6 +44,7 @@
 	"dependencies": {
 		"@fontsource/inter": "^5.2.6",
 		"@fontsource/lato": "^5.2.7",
+		"@lucide/svelte": "^0.545.0",
 		"@types/node": "^24.3.3"
 	}
 }
