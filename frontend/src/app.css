@@ -11,6 +11,6 @@ html {
 }
 
 ::selection {
-	background: var(--color-slate-300);
-	color: var(--color-slate-900);
+	background: var(--color-amber-200);
+	color: var(--color-amber-900);
 }

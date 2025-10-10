@@ -8,3 +8,8 @@ export interface User {
 	Hd: string;
 	CreatedAt: string;
 }
+
+export interface Study {
+	ID: number;
+	Name: string;
+}

@@ -43,8 +43,22 @@ func GenerateJWT(userInfo UserInfo, secret []byte) (string, error) {
 		"name":    userInfo.FullName,
 		"picture": userInfo.Picture,
 		"hd":      userInfo.Hd,
-		"exp":     time.Now().Add(24 * time.Hour).Unix(),
+		"exp":     time.Now().Add(7 * 24 * time.Hour).Unix(),
 		"iat":     time.Now().Unix(),
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString(secret)
+}
+
+func GenerateJWTWithUserID(info UserInfo, userID int, secret []byte) (string, error) {
+	claims := jwt.MapClaims{
+		"sub":     info.GoogleSub,
+		"email":   info.Email,
+		"name":    info.FullName,
+		"picture": info.Picture,
+		"hd":      info.Hd,
+		"user_id": userID,
+		"exp":     time.Now().Add(7 * 24 * time.Hour).Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString(secret)

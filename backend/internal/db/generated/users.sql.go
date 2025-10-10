@@ -13,8 +13,7 @@ import (
 
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (
-    google_sub, study_id, email, full_name, pfp, hd
-) VALUES (
+    google_sub, study_id, email, full_name, pfp, hd) VALUES (
     $1, $2, $3, $4, $5, $6
 )
 RETURNING id, study_id, google_sub, email, full_name, pfp, hd, created_at
@@ -80,6 +79,34 @@ WHERE email = $1 LIMIT 1
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
 	row := q.db.QueryRow(ctx, getUserByEmail, email)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.StudyID,
+		&i.GoogleSub,
+		&i.Email,
+		&i.FullName,
+		&i.Pfp,
+		&i.Hd,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const updateUserStudy = `-- name: UpdateUserStudy :one
+UPDATE users
+SET study_id = $2
+WHERE id = $1
+RETURNING id, study_id, google_sub, email, full_name, pfp, hd, created_at
+`
+
+type UpdateUserStudyParams struct {
+	ID      int32
+	StudyID pgtype.Int4
+}
+
+func (q *Queries) UpdateUserStudy(ctx context.Context, arg UpdateUserStudyParams) (User, error) {
+	row := q.db.QueryRow(ctx, updateUserStudy, arg.ID, arg.StudyID)
 	var i User
 	err := row.Scan(
 		&i.ID,

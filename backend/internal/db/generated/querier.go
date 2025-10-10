@@ -13,12 +13,15 @@ type Querier interface {
 	CreateSubject(ctx context.Context, arg CreateSubjectParams) (Subject, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	GetResource(ctx context.Context, id int32) (Resource, error)
+	GetStudy(ctx context.Context, id int32) (Study, error)
 	GetSubject(ctx context.Context, id int32) (Subject, error)
 	GetUser(ctx context.Context, id int32) (User, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	ListResourcesByOwner(ctx context.Context, ownerID int32) ([]Resource, error)
 	ListResourcesBySubject(ctx context.Context, subjectID int32) ([]Resource, error)
+	ListStudies(ctx context.Context) ([]Study, error)
 	ListSubjects(ctx context.Context) ([]Subject, error)
+	UpdateUserStudy(ctx context.Context, arg UpdateUserStudyParams) (User, error)
 }
 
 var _ Querier = (*Queries)(nil)

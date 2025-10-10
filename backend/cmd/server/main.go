@@ -9,13 +9,14 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/DCCXXV/Nemsy/backend/internal/app"
 	"github.com/DCCXXV/Nemsy/backend/internal/auth"
 	db "github.com/DCCXXV/Nemsy/backend/internal/db/generated"
 	"github.com/DCCXXV/Nemsy/backend/internal/studies"
+	"github.com/DCCXXV/Nemsy/backend/internal/users"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
-	"github.com/go-chi/render"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 )
@@ -42,9 +43,9 @@ func main() {
 
 	queries := db.New(pool)
 
-	app := &App{
-		DB:      pool,
+	myApp := &app.App{
 		Queries: queries,
+		DB:      pool,
 	}
 
 	secret := []byte(os.Getenv("JWT_SECRET"))
@@ -64,14 +65,9 @@ func main() {
 
 	store := auth.NewStateStore(5 * time.Minute)
 
-	authHandler := &auth.Handler{
-		OAuthConfig: auth.GoogleOAuthConfig(),
-		JWTSecret:   secret,
-		StateStore:  store,
-		Queries:     app.Queries,
-	}
-
-	studiesHandler := studies.NewHandler(app.Queries)
+	authHandler := auth.NewHandler(auth.GoogleOAuthConfig(), secret, store, myApp.Queries)
+	studiesHandler := studies.NewHandler(myApp)
+	usersHandler := users.NewHandler(myApp)
 
 	r.Get("/auth/login", authHandler.LoginHandler)
 	r.Get("/auth/callback", authHandler.CallbackHandler)
@@ -79,8 +75,9 @@ func main() {
 	mw := &auth.AuthMiddleware{Secret: secret}
 	r.Group(func(protected chi.Router) {
 		protected.Use(mw.Middleware)
-		protected.Get("/api/me", app.meHandler)
-		protected.Get("/api/studies", studiesHandler.List)
+		protected.Get("/api/me", usersHandler.MeHandler)
+		protected.Put("/api/me/study", usersHandler.UpdateUserStudy)
+		protected.Get("/api/studies", studiesHandler.ListSubjects)
 	})
 
 	srv := &http.Server{Addr: ":8080", Handler: r}
@@ -97,23 +94,4 @@ func main() {
 	<-stop
 	log.Println("Shutting down...")
 	srv.Close() // TODO: use Shutdown for prod
-}
-
-func (a *App) meHandler(w http.ResponseWriter, r *http.Request) {
-	userInfo, ok := r.Context().Value(auth.CtxUserInfo).(auth.UserInfo)
-	if !ok || userInfo.Email == "" {
-		render.Status(r, http.StatusUnauthorized)
-		render.JSON(w, r, map[string]string{"error": "unauthorized"})
-		return
-	}
-
-	user, err := a.Queries.GetUserByEmail(r.Context(), userInfo.Email)
-	if err != nil {
-		render.Status(r, http.StatusInternalServerError)
-		render.JSON(w, r, map[string]string{"error": "database error"})
-		return
-	}
-
-	render.Status(r, http.StatusOK)
-	render.JSON(w, r, user)
 }

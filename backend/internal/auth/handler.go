@@ -19,6 +19,15 @@ type Handler struct {
 	Queries     *db.Queries
 }
 
+func NewHandler(cfg *oauth2.Config, secret []byte, store *StateStore, queries *db.Queries) *Handler {
+	return &Handler{
+		OAuthConfig: cfg,
+		JWTSecret:   secret,
+		StateStore:  store,
+		Queries:     queries,
+	}
+}
+
 type UserInfo struct {
 	GoogleSub string
 	Email     string
@@ -33,7 +42,6 @@ func (h *Handler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Expires", "0")
 
 	state := generateState()
-
 	h.StateStore.Put(state)
 
 	url := h.OAuthConfig.AuthCodeURL(
@@ -59,7 +67,6 @@ func (h *Handler) CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	code := r.URL.Query().Get("code")
-
 	token, err := h.OAuthConfig.Exchange(context.Background(), code)
 	if err != nil {
 		log.Println("Exchange failed:", err)
@@ -80,10 +87,13 @@ func (h *Handler) CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userInfo := ExtractUserInfo(payload.Claims)
+	var user db.User
 	newUser := false
-	if _, err = h.Queries.GetUserByEmail(r.Context(), userInfo.Email); err == pgx.ErrNoRows {
+
+	user, err = h.Queries.GetUserByEmail(r.Context(), userInfo.Email)
+	if err == pgx.ErrNoRows {
 		log.Println("User not found, creating new user:", userInfo.Email)
-		_, err = h.Queries.CreateUser(r.Context(), db.CreateUserParams{
+		user, err = h.Queries.CreateUser(r.Context(), db.CreateUserParams{
 			GoogleSub: userInfo.GoogleSub,
 			StudyID:   pgtype.Int4{Valid: false},
 			Email:     userInfo.Email,
@@ -93,15 +103,13 @@ func (h *Handler) CallbackHandler(w http.ResponseWriter, r *http.Request) {
 		})
 		newUser = true
 	}
-
 	if err != nil {
 		log.Println("Database error:", err)
 		http.Error(w, "Could not save user", http.StatusInternalServerError)
 		return
 	}
 
-	log.Printf("Handler using secret: %q", h.JWTSecret)
-	jwtToken, err := GenerateJWT(userInfo, h.JWTSecret)
+	jwtToken, err := GenerateJWTWithUserID(userInfo, int(user.ID), h.JWTSecret)
 	if err != nil {
 		http.Error(w, "Could not create session token", http.StatusInternalServerError)
 		return
@@ -112,13 +120,13 @@ func (h *Handler) CallbackHandler(w http.ResponseWriter, r *http.Request) {
 		Value:    jwtToken,
 		Path:     "/",
 		HttpOnly: true,
-		Secure:   false,                // TODO: true in prod
-		SameSite: http.SameSiteLaxMode, // TODO: None in prod
+		Secure:   false,
+		SameSite: http.SameSiteLaxMode,
 	})
-	if newUser == true {
+
+	if newUser {
 		http.Redirect(w, r, "http://localhost:5173/auth", http.StatusSeeOther)
 	} else {
-		// TODO: remember later that if a user closes mid onboarding he isnt "new" but wont be able to choose studies
 		http.Redirect(w, r, "http://localhost:5173/", http.StatusSeeOther)
 	}
 }

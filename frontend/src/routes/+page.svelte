@@ -5,10 +5,9 @@
 </script>
 
 {#if data.me}
-	<div class="absolute inset-x-0 top-0 h-[calc(3/7*100vh)] bg-slate-200 z-0"></div>
-	<div
-		class="relative z-10 min-w-1/2 mx-auto my-6 bg-zinc-100 border-2 border-slate-900 rounded h-screen"
-	></div>
+	<div class="bg-slate-200 min-h-screen flex items-start justify-center pt-4 pb-6">
+		<div class="bg-zinc-100 border-2 border-slate-900 rounded w-1/2 h-screen"></div>
+	</div>
 {:else}
 	<div class="relative min-h-screen bg-zinc-100 flex justify-center items-center">
 		<div class="absolute inset-x-0 top-0 h-[calc(3/7*100vh)] bg-slate-200 z-0"></div>
