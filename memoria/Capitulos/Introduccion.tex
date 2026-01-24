@@ -29,30 +29,40 @@
 
 
 \section{Motivación}
-El éxito de plataformas como Wuolah demuestran la necesidad dentro del entorno educativo de compartir y acceder a materiales académicos. A pesar de su popularidad el modelo actual que siguen estas soluciones presentan una serie de problemas que perjudican tanto la experiencia de usuario como la calidad del intercambio de información.
+El éxito de plataformas como Wuolah demuestran la necesidad que tienen los estudiantes de tener un lugar donde poder compartir sus apuntes y demás recursos académicos. A pesar de su popularidad el modelo actual que sigue presenta una serie de problemas que perjudican tanto la experiencia de usuario como la calidad del intercambio de información.
 
-El mayor problema radica en el modelo de negocio basado en publicidad intensiva. Esto genera una experiencia de usuario inferior en donde se llega a tener tiempos de carga de hasta 30 segundos para acceder a un recurso incluso cuando se usa un bloqueador de anuncios.
+Un gran problema que tiene radica en el modelo de negocio basado en publicidad intensiva. Esto genera una experiencia de usuario inferior en el que se pueden destacar los largos tiempos de espera para descargar cada recurso, a menos que se pague una suscripción mensual. En otras palabras, sigue un modelo \textit{freemium} en el que se penaliza demasiado al usuario gratuito.
 
-A este problema de usabilidad se suma un deficiente rendimiento técnico. Para cuantificarlo, se realizó un análisis de la página de descarga de la plataforma utilizando la herramienta Lighthouse. Los resultados, como se muestran en la Figura \ref{fig:lighthouse}, son concluyentes.
+Además, otro problema igual de importante es su pobre rendimiento, al realizar un análisis de la plataforma utilizando Lighthouse,  Figura \ref{fig:lighthouse}, se pueden ver unos resultados bastante concluyentes.
 
 \begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\textwidth]{Imagenes/Bitmap/lighthouse_wuolah.png}
-    \caption{Análisis del rendimiento de Wuolah.com con Google Lighthouse.}
-    \label{fig:lighthouse}
+	\centering
+	\includegraphics[width=0.5\textwidth]{Imagenes/Bitmap/lighthouse_wuolah.png}
+	\caption{Análisis del rendimiento de wuolah.com con Google Lighthouse.}
+	\label{fig:lighthouse}
 \end{figure}
 
-La plataforma obtiene una puntuación de rendimiento de 22 sobre 100, un valor que muestra un gran problema de optimización y explica la lentitud que se siente al usarla. Esta baja puntuación se puede explicar por el uso de arquitecturas pesadas en el lado del cliente y la gran cantidad de anuncios que se cargan en este. Esto empeora significativamente la experiencia del usuario y demuestra la necesidad de un enfoque de diseño más eficiente.
+La plataforma obtiene una puntuación de rendimiento de 22 sobre 100, un resultado que muestra un gran problema de optimización y explica la lentitud que se siente al usarla. Esta baja puntuación se puede explicar por el uso de una arquitectura pesadas en el lado del cliente y la gran cantidad de anuncios que se cargan en este. Esto empeora significativamente la experiencia del usuario y demuestra la necesidad de un enfoque de diseño más eficiente.
 
-El sistema de incentivos que tienen plataformas como Wuolah, basado en micropagos por descarga, presenta un problema de diseño fundamental. Al introducir una recompensa económica, aunque sea mínima, se corre el riesgo de transformar la motivación de los usuarios; el deseo genuino de ayudar es reemplazado por un interés transaccional de bajo valor. Este enfoque se ha demostrado que puede llegar a ser contraproducente. La investigación sobre la motivación ha demostrado que las recompensas externas pueden disminuir el interés propio por realizar una tarea, un efecto conocido como "Desplazamiento Motivacional" \citep{Deci1999, Frey2001}.
+Por otro lado los micropagos por descarga que ofrece Wuolah presentan otro problema fundamental. Cuando se introduce una recompensa económica, especialmente cuando es mínima, se corre el riesgo de transformar la motivación de los usuarios; el deseo genuino de ayudar es reemplazado por un interés transaccional de bajo valor. Este enfoque se ha demostrado que puede llegar a ser contraproducente. La investigación sobre la motivación ha demostrado que las recompensas externas pueden disminuir el interés propio por realizar una tarea, un efecto conocido como "Desplazamiento Motivacional" \citep{Deci1999, Frey2001}.
 
-Además, este modelo de incentivos tiene una segunda consecuencia negativa para las carreras técnicas. Al limitar las recompensas a los archivos PDF, ya que en estos es en los que se puede incrustar anuncios, se desincentiva a que los estudiantes compartan información en otros formatos más adecuados para ciertas áreas como puede ser en el caso de código empobreciendo así la variedad y utilidad de los recursos disponibles en la plataforma.
+Además, este modelo de incentivos tiene otra consecuencia negativa para las carreras técnicas. Al limitar las recompensas a los archivos PDF, ya que en estos es en los que se puede incrustar anuncios, se desincentiva a que los estudiantes compartan información en otros formatos más adecuados para ciertas áreas como puede ser en el caso de código empobreciendo así la variedad y utilidad de los recursos disponibles en la plataforma.
 
 Este trabajo busca solucionar todos estos problemas y tiene como objetivo el diseño y desarrollo de un prototipo de plataforma alternativa. La solución propuesta mejorará el rendimiento usando una arquitectura ligera y eficiente usando un backend en Go y un frontend con SvelteKit. Para reducir los costes de mantenimiento se usarán servidores privados virtuales, VPS, en vez de soluciones \textit{serverless} como AWS. Y se eliminará la publicidad invasiva y los incentivos monetarios para fomentar la colaboración genuina y la compartición de recursos en múltiples formatos.
 
 \section{Objetivos}
-Descripción de los objetivos del trabajo.
-
+El objetico principal de este proyecto es crear y desplegar un prototipo de una aplicación para compartir recursos académicos como apuntes y ejercicios resueltos entre otros.
+Para realizarlo se han creado una serie de objetivos a seguir:
+\begin{itemize}
+	\item Análisis de aplicaciones similares para decidir que tomar y donde se puede mejorar.
+	\item Crear un sistema de diseño para mantener el estilo de la plataforma consistente y moderno.
+	\item Estudio de como funciona el flujo de autorización de Oauth2, especificamente para Google, para su posterior implementación como único método de acceso a la plataforma.
+	\item Estudio de \textit{web scrapping} para extraer grados y asignaturas de páginas web universitarias.
+	\item Estudio de como funciona el almacenamiento de objetos tipo S3, para su posterior uso para guardar los archivos subidos por los usuarios.
+	\item Estudio de PostgreSQL para saber que puedo dejar del lado de la base de datos y que en el \textit{backend}.
+	\item Desarrollar e implementar la plataforma con el diseño creado y el conocimiento aprendido.
+	\item Estudio de Docker y Docker Compose para poder desplegar la aplicación de forma portable utilizando múltiples contenedores orquestados por Docker Compose.
+\end{itemize}
 
 \section{Plan de trabajo}
 Aquí se describe el plan de trabajo a seguir para la consecución de los objetivos descritos en el apartado anterior.
@@ -71,4 +81,4 @@ El siguiente texto se genera con el comando \verb|\lipsum[2-20]| que viene a con
 \subsection{Texto de prueba}
 
 
-\lipsum[2-20]
+\lipsum[2-20]b
