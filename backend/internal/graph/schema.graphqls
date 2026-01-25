@@ -1,0 +1,54 @@
+type User {
+    id: ID!
+    email: String!
+    fullName: String
+    pfp: String
+    study: Study
+    resources: [Resource!]!
+}
+
+type Study {
+    id: ID!
+    name: String!
+    subjects: [Subject!]!
+}
+
+type Subject {
+    id: ID!
+    name: String!
+    year: String
+    resources: [Resource!]!
+}
+
+type Resource {
+    id: ID!
+    title: String!
+    description: String
+    fileUrl: String!
+    fileSize: Int
+    createdAt: String!
+    owner: User!
+    subject: Subject!
+}
+
+type Query {
+    me: User!
+    studies: [Study!]!
+    subjects(studyId: ID!): [Subject!]!
+    resources(subjectId: ID!): [Resource!]!
+    resource(id: ID!): Resource
+}
+
+type Mutation {
+    updateMyStudy(studyId: ID!): User!
+    createResource(input: CreateResourceInput!): Resource!
+    deleteResource(id: ID!): Boolean!
+}
+
+input CreateResourceInput {
+    subjectId: ID!
+    title: String!
+    description: String
+    fileUrl: String!
+    fileSize: Int
+}

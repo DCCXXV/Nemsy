@@ -80,6 +80,12 @@ func main() {
 		protected.Get("/api/studies", studiesHandler.ListSubjects)
 	})
 
+	r.Handle("/graphql", handler.NewDefaultServer(
+    graph.NewExecutableSchema(graph.Config{
+        Resolvers: &graph.Resolver{Queries: queries},
+    }),
+))
+
 	srv := &http.Server{Addr: ":8080", Handler: r}
 	go func() {
 		log.Println("Server starting on :8080...")
