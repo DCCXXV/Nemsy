@@ -9,9 +9,11 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/DCCXXV/Nemsy/backend/internal/app"
 	"github.com/DCCXXV/Nemsy/backend/internal/auth"
 	db "github.com/DCCXXV/Nemsy/backend/internal/db/generated"
+	"github.com/DCCXXV/Nemsy/backend/internal/graph"
 	"github.com/DCCXXV/Nemsy/backend/internal/studies"
 	"github.com/DCCXXV/Nemsy/backend/internal/users"
 	"github.com/go-chi/chi/v5"
@@ -78,13 +80,13 @@ func main() {
 		protected.Get("/api/me", usersHandler.MeHandler)
 		protected.Put("/api/me/study", usersHandler.UpdateUserStudy)
 		protected.Get("/api/studies", studiesHandler.ListSubjects)
-	})
 
-	r.Handle("/graphql", handler.NewDefaultServer(
-    graph.NewExecutableSchema(graph.Config{
-        Resolvers: &graph.Resolver{Queries: queries},
-    }),
-))
+		protected.Handle("/graphql", handler.NewDefaultServer(
+			graph.NewExecutableSchema(graph.Config{
+				Resolvers: &graph.Resolver{Queries: queries},
+			}),
+		))
+	})
 
 	srv := &http.Server{Addr: ":8080", Handler: r}
 	go func() {

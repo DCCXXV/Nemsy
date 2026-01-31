@@ -73,6 +73,46 @@ func (q *Queries) GetResource(ctx context.Context, id int32) (Resource, error) {
 	return i, err
 }
 
+const getResourceWithOwner = `-- name: GetResourceWithOwner :one
+SELECT
+    r.id, r.title, r.description, r.file_url, r.file_size, r.created_at,
+    u.id AS owner_id, u.full_name AS owner_full_name, u.email AS owner_email, u.pfp AS owner_pfp
+FROM resources r
+JOIN users u ON r.owner_id = u.id
+WHERE r.id = $1 LIMIT 1
+`
+
+type GetResourceWithOwnerRow struct {
+	ID            int32
+	Title         string
+	Description   pgtype.Text
+	FileUrl       string
+	FileSize      pgtype.Int8
+	CreatedAt     pgtype.Timestamp
+	OwnerID       int32
+	OwnerFullName pgtype.Text
+	OwnerEmail    string
+	OwnerPfp      pgtype.Text
+}
+
+func (q *Queries) GetResourceWithOwner(ctx context.Context, id int32) (GetResourceWithOwnerRow, error) {
+	row := q.db.QueryRow(ctx, getResourceWithOwner, id)
+	var i GetResourceWithOwnerRow
+	err := row.Scan(
+		&i.ID,
+		&i.Title,
+		&i.Description,
+		&i.FileUrl,
+		&i.FileSize,
+		&i.CreatedAt,
+		&i.OwnerID,
+		&i.OwnerFullName,
+		&i.OwnerEmail,
+		&i.OwnerPfp,
+	)
+	return i, err
+}
+
 const listResourcesByOwner = `-- name: ListResourcesByOwner :many
 SELECT id, owner_id, subject_id, title, description, file_url, file_size, created_at FROM resources
 WHERE owner_id = $1
@@ -132,6 +172,60 @@ func (q *Queries) ListResourcesBySubject(ctx context.Context, subjectID int32) (
 			&i.FileUrl,
 			&i.FileSize,
 			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listResourcesBySubjectWithOwner = `-- name: ListResourcesBySubjectWithOwner :many
+SELECT
+    r.id, r.title, r.description, r.file_url, r.file_size, r.created_at,
+    u.id AS owner_id, u.full_name AS owner_full_name, u.email AS owner_email, u.pfp AS owner_pfp
+FROM resources r
+JOIN users u ON r.owner_id = u.id
+WHERE r.subject_id = $1
+ORDER BY r.created_at DESC
+`
+
+type ListResourcesBySubjectWithOwnerRow struct {
+	ID            int32
+	Title         string
+	Description   pgtype.Text
+	FileUrl       string
+	FileSize      pgtype.Int8
+	CreatedAt     pgtype.Timestamp
+	OwnerID       int32
+	OwnerFullName pgtype.Text
+	OwnerEmail    string
+	OwnerPfp      pgtype.Text
+}
+
+func (q *Queries) ListResourcesBySubjectWithOwner(ctx context.Context, subjectID int32) ([]ListResourcesBySubjectWithOwnerRow, error) {
+	rows, err := q.db.Query(ctx, listResourcesBySubjectWithOwner, subjectID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListResourcesBySubjectWithOwnerRow
+	for rows.Next() {
+		var i ListResourcesBySubjectWithOwnerRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Title,
+			&i.Description,
+			&i.FileUrl,
+			&i.FileSize,
+			&i.CreatedAt,
+			&i.OwnerID,
+			&i.OwnerFullName,
+			&i.OwnerEmail,
+			&i.OwnerPfp,
 		); err != nil {
 			return nil, err
 		}

@@ -8,48 +8,252 @@ package graph
 import (
 	"context"
 	"fmt"
+	"strconv"
+	"time"
 
+	"github.com/DCCXXV/Nemsy/backend/internal/auth"
+	db "github.com/DCCXXV/Nemsy/backend/internal/db/generated"
 	"github.com/DCCXXV/Nemsy/backend/internal/graph/model"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 // UpdateMyStudy is the resolver for the updateMyStudy field.
 func (r *mutationResolver) UpdateMyStudy(ctx context.Context, studyID string) (*model.User, error) {
-	panic(fmt.Errorf("not implemented: UpdateMyStudy - updateMyStudy"))
+	userIDVal := ctx.Value(auth.CtxUserID)
+	if userIDVal == nil {
+		return nil, fmt.Errorf("unauthorized")
+	}
+
+	userIDInt, ok := userIDVal.(int32)
+	if !ok {
+		return nil, fmt.Errorf("invalid user ID in context")
+	}
+
+	studyIDInt, err := strconv.Atoi(studyID)
+	if err != nil {
+		return nil, fmt.Errorf("invalid studyID: %w", err)
+	}
+
+	dbUser, err := r.Queries.UpdateUserStudy(ctx, db.UpdateUserStudyParams{
+		ID:      userIDInt,
+		StudyID: pgtype.Int4{Int32: int32(studyIDInt), Valid: true},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.User{
+		ID:       fmt.Sprintf("%d", dbUser.ID),
+		Email:    dbUser.Email,
+		FullName: &dbUser.FullName.String,
+		Pfp:      &dbUser.Pfp.String,
+	}, nil
 }
 
 // CreateResource is the resolver for the createResource field.
 func (r *mutationResolver) CreateResource(ctx context.Context, input model.CreateResourceInput) (*model.Resource, error) {
-	panic(fmt.Errorf("not implemented: CreateResource - createResource"))
+	userIDVal := ctx.Value(auth.CtxUserID)
+	if userIDVal == nil {
+		return nil, fmt.Errorf("unauthorized")
+	}
+
+	userIDInt, ok := userIDVal.(int32)
+	if !ok {
+		return nil, fmt.Errorf("invalid user ID in context")
+	}
+
+	subjectIDInt, err := strconv.Atoi(input.SubjectID)
+	if err != nil {
+		return nil, fmt.Errorf("invalid subjectID: %w", err)
+	}
+
+	var description pgtype.Text
+	if input.Description != nil {
+		description = pgtype.Text{String: *input.Description, Valid: true}
+	}
+
+	var fileSize pgtype.Int8
+	if input.FileSize != nil {
+		fileSize = pgtype.Int8{Int64: int64(*input.FileSize), Valid: true}
+	}
+
+	dbResource, err := r.Queries.CreateResource(ctx, db.CreateResourceParams{
+		OwnerID:     userIDInt,
+		SubjectID:   int32(subjectIDInt),
+		Title:       input.Title,
+		Description: description,
+		FileUrl:     input.FileURL,
+		FileSize:    fileSize,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	dbUser, err := r.Queries.GetUser(ctx, userIDInt)
+	if err != nil {
+		return nil, err
+	}
+
+	var fileSizePtr *int32
+	if dbResource.FileSize.Valid {
+		size := int32(dbResource.FileSize.Int64)
+		fileSizePtr = &size
+	}
+
+	return &model.Resource{
+		ID:          fmt.Sprintf("%d", dbResource.ID),
+		Title:       dbResource.Title,
+		Description: &dbResource.Description.String,
+		FileURL:     dbResource.FileUrl,
+		FileSize:    fileSizePtr,
+		CreatedAt:   dbResource.CreatedAt.Time.Format(time.RFC3339),
+		Owner: &model.User{
+			ID:       fmt.Sprintf("%d", dbUser.ID),
+			Email:    dbUser.Email,
+			FullName: &dbUser.FullName.String,
+			Pfp:      &dbUser.Pfp.String,
+		},
+	}, nil
 }
 
 // DeleteResource is the resolver for the deleteResource field.
 func (r *mutationResolver) DeleteResource(ctx context.Context, id string) (bool, error) {
-	panic(fmt.Errorf("not implemented: DeleteResource - deleteResource"))
+	return false, fmt.Errorf("no delete yet !!")
 }
 
 // Me is the resolver for the me field.
 func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
-	panic(fmt.Errorf("not implemented: Me - me"))
+	userIDVal := ctx.Value(auth.CtxUserID)
+	if userIDVal == nil {
+		return nil, fmt.Errorf("unauthorized")
+	}
+
+	userIDInt, ok := userIDVal.(int32)
+	if !ok {
+		return nil, fmt.Errorf("invalid user ID in context")
+	}
+
+	dbUser, err := r.Queries.GetUser(ctx, userIDInt)
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.User{
+		ID:       fmt.Sprintf("%d", dbUser.ID),
+		Email:    dbUser.Email,
+		FullName: &dbUser.FullName.String,
+		Pfp:      &dbUser.Pfp.String,
+	}, nil
 }
 
 // Studies is the resolver for the studies field.
 func (r *queryResolver) Studies(ctx context.Context) ([]*model.Study, error) {
-	panic(fmt.Errorf("not implemented: Studies - studies"))
+	dbStudies, err := r.Queries.ListStudies(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]*model.Study, len(dbStudies))
+	for i, s := range dbStudies {
+		result[i] = &model.Study{
+			ID:   fmt.Sprintf("%d", s.ID),
+			Name: s.Name,
+		}
+	}
+
+	return result, nil
 }
 
 // Subjects is the resolver for the subjects field.
 func (r *queryResolver) Subjects(ctx context.Context, studyID string) ([]*model.Subject, error) {
-	panic(fmt.Errorf("not implemented: Subjects - subjects"))
+	dbSubjects, err := r.Queries.ListSubjects(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]*model.Subject, len(dbSubjects))
+	for i, s := range dbSubjects {
+		result[i] = &model.Subject{
+			ID:   fmt.Sprintf("%d", s.ID),
+			Name: s.Name,
+			Year: &s.Year.String,
+		}
+	}
+
+	return result, nil
 }
 
 // Resources is the resolver for the resources field.
 func (r *queryResolver) Resources(ctx context.Context, subjectID string) ([]*model.Resource, error) {
-	panic(fmt.Errorf("not implemented: Resources - resources"))
+	subjectIDInt, err := strconv.Atoi(subjectID)
+	if err != nil {
+		return nil, fmt.Errorf("invalid subjectID: %w", err)
+	}
+
+	dbResources, err := r.Queries.ListResourcesBySubjectWithOwner(ctx, int32(subjectIDInt))
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]*model.Resource, len(dbResources))
+	for i, re := range dbResources {
+		var fileSize *int32
+		if re.FileSize.Valid {
+			size := int32(re.FileSize.Int64)
+			fileSize = &size
+		}
+
+		result[i] = &model.Resource{
+			ID:          fmt.Sprintf("%d", re.ID),
+			Title:       re.Title,
+			Description: &re.Description.String,
+			FileURL:     re.FileUrl,
+			FileSize:    fileSize,
+			CreatedAt:   re.CreatedAt.Time.Format(time.RFC3339),
+			Owner: &model.User{
+				ID:       fmt.Sprintf("%d", re.OwnerID),
+				Email:    re.OwnerEmail,
+				FullName: &re.OwnerFullName.String,
+				Pfp:      &re.OwnerPfp.String,
+			},
+		}
+	}
+
+	return result, nil
 }
 
 // Resource is the resolver for the resource field.
 func (r *queryResolver) Resource(ctx context.Context, id string) (*model.Resource, error) {
-	panic(fmt.Errorf("not implemented: Resource - resource"))
+	subjectIDInt, err := strconv.Atoi(id)
+	if err != nil {
+		return nil, err
+	}
+
+	dbResource, err := r.Queries.GetResourceWithOwner(ctx, int32(subjectIDInt))
+	if err != nil {
+		return nil, err
+	}
+
+	var fileSize *int32
+	if dbResource.FileSize.Valid {
+		size := int32(dbResource.FileSize.Int64)
+		fileSize = &size
+	}
+
+	return &model.Resource{
+		ID:          fmt.Sprintf("%d", dbResource.ID),
+		Title:       dbResource.Title,
+		Description: &dbResource.Description.String,
+		FileURL:     dbResource.FileUrl,
+		FileSize:    fileSize,
+		CreatedAt:   dbResource.CreatedAt.Time.Format(time.RFC3339),
+		Owner: &model.User{
+			ID:       fmt.Sprintf("%d", dbResource.OwnerID),
+			Email:    dbResource.OwnerEmail,
+			FullName: &dbResource.OwnerFullName.String,
+			Pfp:      &dbResource.OwnerPfp.String,
+		},
+	}, nil
 }
 
 // Mutation returns MutationResolver implementation.
