@@ -3,6 +3,20 @@
 @plugin '@tailwindcss/typography';
 @import '@fontsource/lato/400.css';
 
+@theme {
+	--color-pastel-50: oklch(0.957 0.002 18);
+	--color-pastel-100: oklch(0.922 0.005 0.44);
+	--color-pastel-200: oklch(0.837 0.01 9.74);
+	--color-pastel-300: oklch(0.761 0.017 8.4);
+	--color-pastel-400: oklch(0.675 0.028 6.08);
+	--color-pastel-500: oklch(0.582 0.037 6.73);
+	--color-pastel-600: oklch(0.495 0.03 9.47);
+	--color-pastel-700: oklch(0.408 0.027 7.72);
+	--color-pastel-800: oklch(0.322 0.021 8.71);
+	--color-pastel-900: oklch(0.225 0.015 3.49);
+	--color-pastel-950: oklch(0.178 0.012 8.78);
+}
+
 html {
 	font-family: 'Lato', sans-serif;
 	font-optical-sizing: auto;

@@ -7,9 +7,9 @@
 </script>
 
 {#if data.me}
-	<div class="bg-slate-200 flex items-start justify-center pt-4 pb-6">
-		<div class="bg-zinc-100 border-2 border-slate-900 rounded w-1/4 ml-4 sticky top-4">
-			<div class="p-2 flex gap-4 items-center border-b-2 border-slate-900">
+	<div class="bg-pastel-200 flex items-start justify-center pt-4 pb-6">
+		<div class="bg-zinc-100 border-2 border-zinc-900 rounded w-1/4 ml-4 sticky top-4">
+			<div class="p-2 flex gap-4 items-center border-b-2 border-zinc-900">
 				<img
 					src="https://www.google.com/s2/favicons?domain={data.me?.Hd}&sz=64"
 					alt="Logo de {data.me?.Hd}"
@@ -17,7 +17,7 @@
 				/>
 				<p class="text-xl">Universidad Complutense de Madrid</p>
 			</div>
-			<div class="p-2 flex gap-4 items-center border-b-2 border-slate-900">
+			<div class="p-2 flex gap-4 items-center border-b-2 border-zinc-900">
 				<p class="text-lg">Grado en Ingeniería de Software</p>
 			</div>
 			<div class="p-2 flex gap-4 items-center">
@@ -56,16 +56,16 @@
 				</Tabs.Root>
 			</div>
 		</div>
-		<div class="bg-zinc-100 border-2 border-slate-900 rounded w-1/2 mx-4 h-screen">
+		<div class="bg-zinc-100 border-2 border-zinc-900 rounded w-1/2 mx-4 h-screen">
 			<div class="p-2 border-b-2">
 				<h1 class="text-2xl">Fijadas</h1>
 			</div>
 		</div>
-		<div class="bg-zinc-100 border-2 border-slate-900 rounded w-1/4 mr-4 h-24 sticky top-4"></div>
+		<div class="bg-zinc-100 border-2 border-zinc-900 rounded w-1/4 mr-4 h-24 sticky top-4"></div>
 	</div>
 {:else}
 	<div class="relative min-h-screen bg-zinc-100 flex justify-center items-center">
-		<div class="absolute inset-x-0 top-0 h-[calc(3/7*100vh)] bg-slate-200 z-0"></div>
+		<div class="absolute inset-x-0 top-0 h-[calc(3/7*100vh)] bg-lime-200 z-0"></div>
 
 		<div
 			class="relative z-10 flex flex-col lg:flex-row w-full max-w-6xl p-4 lg:p-0 mt-24 lg:mt-0 mb-24"

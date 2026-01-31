@@ -29,7 +29,7 @@
 	{@render props.children?.()}
 {:else}
 	<div class="min-h-screen flex flex-col bg-zinc-100">
-		<div class="bg-slate-200 bg-opacity-70 z-50 flex items-center justify-between px-4 py-2">
+		<div class="bg-pastel-200 bg-opacity-70 z-50 flex items-center justify-between px-4 py-2">
 			<div class="flex items-center">
 				<div class="relative" use:clickOutside onoutclick={closeMenu}>
 					<button
@@ -59,7 +59,8 @@
 							<li><a class="block px-4 py-2 hover:bg-zinc-200 rounded" href="/">Inicio</a></li>
 							<li><a class="block px-4 py-2 hover:bg-zinc-200 rounded" href="#">Buscar</a></li>
 							<li>
-								<a class="block px-4 py-2 hover:bg-zinc-200 rounded" href="#">Crear Recurso</a>
+								<a class="block px-4 py-2 hover:bg-zinc-200 rounded" href="/create">Crear Recurso</a
+								>
 							</li>
 						</ul>
 					{/if}
@@ -84,14 +85,15 @@
 					</li>
 					<li>
 						<a
-							class="h-10 flex items-center px-6 py-2 hover:bg-zinc-200 rounded transition-colors"
+							class="cursor-not-allowed h-10 flex items-center px-6 py-2 hover:bg-zinc-200 rounded transition-colors"
 							href="#">Buscar</a
 						>
 					</li>
 					<li>
 						<a
-							class="h-10 flex items-center px-6 py-2 hover:bg-zinc-200 rounded transition-colors"
-							href="#">Crear</a
+							class="h-10 flex items-center px-6 py-2 hover:bg-zinc-200 rounded transition-colors
+							{currentPath === '/create' ? 'font-bold bg-zinc-200' : ''}"
+							href="/create">Crear</a
 						>
 					</li>
 				</ul>
@@ -107,7 +109,7 @@
 				{:else}
 					<button
 						onclick={() => (window.location.href = '/auth')}
-						class="h-10 px-4 py-2 bg-rose-300 hover:brightness-90 border-zinc-900 border-2 rounded transition-colors inline-flex items-center cursor-pointer"
+						class="h-10 px-4 py-2 bg-orange-300 hover:brightness-90 border-zinc-900 border-2 rounded transition-colors inline-flex items-center cursor-pointer"
 					>
 						<svg
 							class="mr-2 -ml-1 w-4 h-4"
@@ -133,7 +135,9 @@
 		{@render props.children?.()}
 	</div>
 
-	<footer class="bg-slate-200 text-slate-950 p-10 flex flex-col md:flex-row justify-between gap-8">
+	<footer
+		class="bg-pastel-200 text-pastel-950 p-10 flex flex-col md:flex-row justify-between gap-8"
+	>
 		<aside class="flex flex-col md:flex-row items-start md:items-center gap-4 shrink-0">
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 279 279" width="64" height="64"
 				><defs></defs><g transform="matrix(1,0,0,1,-110.080572441,-110.080572441)">
@@ -166,37 +170,37 @@
 		</aside>
 
 		<nav class="flex flex-grow flex-col gap-2 flex-1 sm:flex-none">
-			<h6 class="text-sm font-bold tracking-wide text-slate-600 uppercase">Información</h6>
+			<h6 class="text-sm font-bold tracking-wide text-pastel-600 uppercase">Información</h6>
 			<a
 				href="#"
-				class="text-slate-800 hover:text-slate-900 hover:underline transition-colors no-underline"
+				class="text-pastel-800 hover:text-pastel-900 hover:underline transition-colors no-underline"
 			>
 				Sobre nosotros
 			</a>
 			<a
 				href="#"
-				class="text-slate-800 hover:text-slate-900 hover:underline transition-colors no-underline"
+				class="text-pastel-800 hover:text-pastel-900 hover:underline transition-colors no-underline"
 			>
 				Contacto
 			</a>
 		</nav>
 		<nav class="flex flex-col gap-2 flex-1 sm:flex-none">
-			<h6 class="text-sm font-bold tracking-wide text-slate-600 uppercase">Legal</h6>
+			<h6 class="text-sm font-bold tracking-wide text-pastel-600 uppercase">Legal</h6>
 			<a
 				href="/tos"
-				class="text-slate-800 hover:text-slate-900 hover:underline transition-colors no-underline"
+				class="text-pastel-800 hover:text-pastel-900 hover:underline transition-colors no-underline"
 			>
 				Términos de uso
 			</a>
 			<a
 				href="/privacy"
-				class="text-slate-800 hover:text-slate-900 hover:underline transition-colors no-underline"
+				class="text-pastel-800 hover:text-pastel-900 hover:underline transition-colors no-underline"
 			>
 				Política de privacidad
 			</a>
 			<a
 				href="/cookies"
-				class="text-slate-800 hover:text-slate-900 hover:underline transition-colors no-underline"
+				class="text-pastel-800 hover:text-pastel-900 hover:underline transition-colors no-underline"
 			>
 				Política de Cookies
 			</a>
