@@ -57,17 +57,10 @@
 							class="absolute bg-zinc-100 rounded z-10 mt-3 w-52 p-2 list-none border-zinc-900 border-2 transition-opacity"
 						>
 							<li><a class="block px-4 py-2 hover:bg-zinc-200 rounded" href="/">Inicio</a></li>
+							<li><a class="block px-4 py-2 hover:bg-zinc-200 rounded" href="#">Buscar</a></li>
 							<li>
-								<div class="relative">
-									<button
-										class="block w-full text-left px-4 py-2 hover:bg-zinc-200 rounded"
-										onclick={() => (isMenuOpen = !isMenuOpen)}
-									>
-										Explorar
-									</button>
-								</div>
+								<a class="block px-4 py-2 hover:bg-zinc-200 rounded" href="#">Crear Recurso</a>
 							</li>
-							<li><a class="block px-4 py-2 hover:bg-zinc-200 rounded" href="#">Guardado</a></li>
 						</ul>
 					{/if}
 				</div>
@@ -75,7 +68,7 @@
 				<a
 					href="/"
 					class="h-10 text-xl text-zinc-900 font-bold px-4 py-2 bg-zinc-100 hover:brightness-90 border-2 border-zinc-900 rounded transition-colors inline-flex items-center cursor-pointer"
-					>Nemsy</a
+					>nemsy</a
 				>
 			</div>
 
@@ -90,32 +83,15 @@
 						</a>
 					</li>
 					<li>
-						<details
-							class="relative"
-							bind:this={detailsElement}
-							use:clickOutside
-							onoutclick={closeDetails}
+						<a
+							class="h-10 flex items-center px-6 py-2 hover:bg-zinc-200 rounded transition-colors"
+							href="#">Buscar</a
 						>
-							<summary
-								class="h-10 flex items-center px-6 py-2 hover:bg-zinc-200 rounded cursor-pointer transition-colors"
-								>Explorar
-							</summary>
-							<ul
-								class="absolute mt-2 p-2 bg-zinc-100 border-zinc-900 border-2 shadow rounded list-none min-w-max"
-							>
-								<li>
-									<a class="block px-4 py-2 hover:bg-zinc-200 rounded" href="#">Apuntes</a>
-								</li>
-								<li>
-									<a class="block px-4 py-2 hover:bg-zinc-200 rounded" href="#">Universidades</a>
-								</li>
-							</ul>
-						</details>
 					</li>
 					<li>
 						<a
 							class="h-10 flex items-center px-6 py-2 hover:bg-zinc-200 rounded transition-colors"
-							href="#">Guardado</a
+							href="#">Crear</a
 						>
 					</li>
 				</ul>
@@ -157,7 +133,7 @@
 		{@render props.children?.()}
 	</div>
 
-	<footer class="bg-slate-300 text-slate-800 p-10 flex flex-col md:flex-row justify-between gap-8">
+	<footer class="bg-slate-200 text-slate-950 p-10 flex flex-col md:flex-row justify-between gap-8">
 		<aside class="flex flex-col md:flex-row items-start md:items-center gap-4 shrink-0">
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 279 279" width="64" height="64"
 				><defs></defs><g transform="matrix(1,0,0,1,-110.080572441,-110.080572441)">
@@ -183,7 +159,7 @@
 				></svg
 			>
 			<p class="text-sm">
-				Nemsy.org
+				nemsy.org
 				<br />
 				Recursos académicos compartidos por y para estudiantes.
 			</p>
