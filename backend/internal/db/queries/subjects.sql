@@ -4,8 +4,12 @@ WHERE id = $1 LIMIT 1;
 
 -- name: ListSubjects :many
 SELECT * FROM subjects
-GROUP BY year
-ORDER BY name;
+ORDER BY year, name;
+
+-- name: ListSubjectsByStudy :many
+SELECT * FROM subjects
+WHERE study_id = $1
+ORDER BY year, name;
 
 -- name: CreateSubject :one
 INSERT INTO subjects (

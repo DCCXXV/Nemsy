@@ -9,11 +9,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/DCCXXV/Nemsy/backend/internal/app"
 	"github.com/DCCXXV/Nemsy/backend/internal/auth"
 	db "github.com/DCCXXV/Nemsy/backend/internal/db/generated"
-	"github.com/DCCXXV/Nemsy/backend/internal/graph"
+	"github.com/DCCXXV/Nemsy/backend/internal/resources"
 	"github.com/DCCXXV/Nemsy/backend/internal/studies"
 	"github.com/DCCXXV/Nemsy/backend/internal/users"
 	"github.com/go-chi/chi/v5"
@@ -70,22 +69,32 @@ func main() {
 	authHandler := auth.NewHandler(auth.GoogleOAuthConfig(), secret, store, myApp.Queries)
 	studiesHandler := studies.NewHandler(myApp)
 	usersHandler := users.NewHandler(myApp)
+	resourcesHandler := resources.NewHandler(myApp)
 
 	r.Get("/auth/login", authHandler.LoginHandler)
 	r.Get("/auth/callback", authHandler.CallbackHandler)
 
+	// TODO: S3 object storage, using local storage for testing
+	uploadDir := os.Getenv("UPLOAD_DIR")
+	if uploadDir == "" {
+		uploadDir = "./uploads"
+	}
+	fileServer := http.FileServer(http.Dir(uploadDir))
+	r.Handle("/uploads/*", http.StripPrefix("/uploads/", fileServer))
+
 	mw := &auth.AuthMiddleware{Secret: secret}
 	r.Group(func(protected chi.Router) {
 		protected.Use(mw.Middleware)
+
 		protected.Get("/api/me", usersHandler.MeHandler)
 		protected.Put("/api/me/study", usersHandler.UpdateUserStudy)
-		protected.Get("/api/studies", studiesHandler.ListSubjects)
+		protected.Get("/api/me/subjects", usersHandler.MySubjects)
 
-		protected.Handle("/graphql", handler.NewDefaultServer(
-			graph.NewExecutableSchema(graph.Config{
-				Resolvers: &graph.Resolver{Queries: queries},
-			}),
-		))
+		protected.Get("/api/studies", studiesHandler.ListStudies)
+
+		protected.Post("/api/resources", resourcesHandler.Create)
+		protected.Get("/api/resources/{id}", resourcesHandler.Get)
+		protected.Get("/api/subjects/{id}/resources", resourcesHandler.ListBySubject)
 	})
 
 	srv := &http.Server{Addr: ":8080", Handler: r}

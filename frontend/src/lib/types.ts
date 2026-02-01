@@ -1,15 +1,35 @@
 export interface User {
-	ID: number;
-	StudyID: number | null;
-	GoogleSub: string;
-	Email: string;
-	FullName: string;
-	Pfp: string;
-	Hd: string;
-	CreatedAt: string;
+	id: number;
+	email: string;
+	fullName?: string;
+	pfp?: string;
+	hd?: string;
+	studyId?: number;
+	studyName?: string;
 }
 
 export interface Study {
-	ID: number;
-	Name: string;
+	id: number;
+	name: string;
+}
+
+export interface Subject {
+	id: number;
+	name: string;
+	year?: string;
+}
+
+export interface Resource {
+	id: number;
+	title: string;
+	description?: string;
+	fileUrl: string;
+	fileSize?: number;
+	createdAt: string;
+	owner?: {
+		id: number;
+		fullName?: string;
+		email: string;
+		pfp?: string;
+	};
 }

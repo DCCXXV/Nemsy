@@ -57,12 +57,42 @@ func (q *Queries) GetSubject(ctx context.Context, id int32) (Subject, error) {
 
 const listSubjects = `-- name: ListSubjects :many
 SELECT id, study_id, name, year FROM subjects
-GROUP BY year
-ORDER BY name
+ORDER BY year, name
 `
 
 func (q *Queries) ListSubjects(ctx context.Context) ([]Subject, error) {
 	rows, err := q.db.Query(ctx, listSubjects)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Subject
+	for rows.Next() {
+		var i Subject
+		if err := rows.Scan(
+			&i.ID,
+			&i.StudyID,
+			&i.Name,
+			&i.Year,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listSubjectsByStudy = `-- name: ListSubjectsByStudy :many
+SELECT id, study_id, name, year FROM subjects
+WHERE study_id = $1
+ORDER BY year, name
+`
+
+func (q *Queries) ListSubjectsByStudy(ctx context.Context, studyID pgtype.Int4) ([]Subject, error) {
+	rows, err := q.db.Query(ctx, listSubjectsByStudy, studyID)
 	if err != nil {
 		return nil, err
 	}

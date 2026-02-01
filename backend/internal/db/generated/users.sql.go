@@ -93,6 +93,88 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 	return i, err
 }
 
+const getUserWithStudy = `-- name: GetUserWithStudy :one
+SELECT
+    u.id, u.study_id, u.google_sub, u.email, u.full_name, u.pfp, u.hd, u.created_at,
+    s.id AS study_id_fk,
+    s.name AS study_name
+FROM users u
+LEFT JOIN studies s ON u.study_id = s.id
+WHERE u.id = $1 LIMIT 1
+`
+
+type GetUserWithStudyRow struct {
+	ID        int32
+	StudyID   pgtype.Int4
+	GoogleSub string
+	Email     string
+	FullName  pgtype.Text
+	Pfp       pgtype.Text
+	Hd        pgtype.Text
+	CreatedAt pgtype.Timestamp
+	StudyIDFk pgtype.Int4
+	StudyName pgtype.Text
+}
+
+func (q *Queries) GetUserWithStudy(ctx context.Context, id int32) (GetUserWithStudyRow, error) {
+	row := q.db.QueryRow(ctx, getUserWithStudy, id)
+	var i GetUserWithStudyRow
+	err := row.Scan(
+		&i.ID,
+		&i.StudyID,
+		&i.GoogleSub,
+		&i.Email,
+		&i.FullName,
+		&i.Pfp,
+		&i.Hd,
+		&i.CreatedAt,
+		&i.StudyIDFk,
+		&i.StudyName,
+	)
+	return i, err
+}
+
+const getUserWithStudyByEmail = `-- name: GetUserWithStudyByEmail :one
+SELECT
+    u.id, u.study_id, u.google_sub, u.email, u.full_name, u.pfp, u.hd, u.created_at,
+    s.id AS study_id_fk,
+    s.name AS study_name
+FROM users u
+LEFT JOIN studies s ON u.study_id = s.id
+WHERE u.email = $1 LIMIT 1
+`
+
+type GetUserWithStudyByEmailRow struct {
+	ID        int32
+	StudyID   pgtype.Int4
+	GoogleSub string
+	Email     string
+	FullName  pgtype.Text
+	Pfp       pgtype.Text
+	Hd        pgtype.Text
+	CreatedAt pgtype.Timestamp
+	StudyIDFk pgtype.Int4
+	StudyName pgtype.Text
+}
+
+func (q *Queries) GetUserWithStudyByEmail(ctx context.Context, email string) (GetUserWithStudyByEmailRow, error) {
+	row := q.db.QueryRow(ctx, getUserWithStudyByEmail, email)
+	var i GetUserWithStudyByEmailRow
+	err := row.Scan(
+		&i.ID,
+		&i.StudyID,
+		&i.GoogleSub,
+		&i.Email,
+		&i.FullName,
+		&i.Pfp,
+		&i.Hd,
+		&i.CreatedAt,
+		&i.StudyIDFk,
+		&i.StudyName,
+	)
+	return i, err
+}
+
 const updateUserStudy = `-- name: UpdateUserStudy :one
 UPDATE users
 SET study_id = $2

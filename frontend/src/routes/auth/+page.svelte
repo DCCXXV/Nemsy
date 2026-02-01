@@ -15,7 +15,7 @@
 	let selectedStudy = $state<Study | null>(null);
 
 	onMount(() => {
-		if (data.me?.StudyID === null) {
+		if (data.me?.studyId === null) {
 			loadStudies();
 		}
 	});
@@ -40,7 +40,7 @@
 	}
 
 	let filteredStudies = $derived(
-		studies.filter((study) => study.Name?.toLowerCase().includes(query.toLocaleLowerCase()))
+		studies.filter((study) => study.name?.toLowerCase().includes(query.toLocaleLowerCase()))
 	);
 
 	function selectStudy(study: Study) {
@@ -59,7 +59,7 @@
 						'Content-Type': 'application/json'
 					},
 					credentials: 'include',
-					body: JSON.stringify({ studyId: study.ID })
+					body: JSON.stringify({ studyId: study.id })
 				});
 
 				if (response.ok) {
@@ -75,26 +75,30 @@
 </script>
 
 <div class="lg:mx-20 w-full h-full flex flex-col relative">
-	{#if data.me?.StudyID === null}
-		{#if data.me?.Hd === null}
+	{#if data.me?.studyId === null}
+		{#if data.me?.hd === null}
 			<p class="text-xl">
-				No hemos podido detectar tu universidad a partir de tu correo (<em>{data.me?.Email}</em>).
+				No hemos podido detectar tu universidad a partir de tu correo (<em>{data.me?.email}</em>).
 				Por el momento solo esta disponible la UCM.
 			</p>
-			<div class="rounded bg-slate-200 my-4 p-2 flex border-2 border-slate-900 gap-4 items-center">
+			<div
+				class="rounded bg-pastel-200 my-4 p-2 flex border-2 border-pastel-900 gap-4 items-center"
+			>
 				<img
-					src="https://logo.clearbit.com/{data.me?.Hd}"
-					alt="Logo de {data.me?.Hd}"
+					src="https://logo.clearbit.com/{data.me?.hd}"
+					alt="Logo de {data.me?.hd}"
 					class="rounded"
 				/>
 				<h1 class="text-xl">Universidad Complutense de Madrid</h1>
 			</div>
 		{:else}
 			<p class="text-xl">Hemos detectado que tu universidad es:</p>
-			<div class="rounded bg-slate-200 my-4 p-2 flex border-2 border-slate-500 gap-4 items-center">
+			<div
+				class="rounded bg-pastel-200 my-4 p-2 flex border-2 border-pastel-500 gap-4 items-center"
+			>
 				<img
-					src="https://logo.clearbit.com/{data.me?.Hd}"
-					alt="Logo de {data.me?.Hd}"
+					src="https://logo.clearbit.com/{data.me?.hd}"
+					alt="Logo de {data.me?.hd}"
 					class="rounded"
 				/>
 				<!-- TODO: JetBrains SWOT -->
@@ -102,7 +106,7 @@
 			</div>
 		{/if}
 		<p class="text-xl">Para continuar, selecciona tu grado:</p>
-		<div class="w-full flex rounded border-2 border-slate-900 mb-6 mt-2 items-center">
+		<div class="w-full flex rounded border-2 border-pastel-900 mb-6 mt-2 items-center">
 			<Search class="mx-2" />
 			<input
 				type="search"
@@ -114,21 +118,21 @@
 		</div>
 		{#if loading}
 			<!-- skeleton later -->
-			<p class="text-center text-slate-600">Cargando grados...</p>
+			<p class="text-center text-pastel-600">Cargando grados...</p>
 		{:else if filteredStudies.length > 0}
-			<div class="mb-6 bg-zinc-100 border-slate-900 border-2 rounded overflow-auto max-h-1/2">
-				{#each filteredStudies as study (study.ID)}
+			<div class="mb-6 bg-zinc-100 border-pastel-900 border-2 rounded overflow-auto max-h-1/2">
+				{#each filteredStudies as study (study.id)}
 					<button
 						onclick={() => selectStudy(study)}
 						class={`w-full text-left p-2 hover:cursor-pointer transition-colors ${
-							selectedStudy?.Name == study.Name
-								? 'bg-slate-200 hover:bg-slate-300 border-slate-500'
+							selectedStudy?.name == study.name
+								? 'bg-pastel-200 hover:bg-pastel-300 border-pastel-500'
 								: 'bg-zinc-100 hover:bg-zinc-200 border-zinc-100'
 						} ${filteredStudies.length == 1 ? 'border-0' : 'border-y-2'}
 						}`}
 					>
 						<h3 class="text-lg text-nowrap">
-							<HighlightText text={study.Name} {query} />
+							<HighlightText text={study.name} {query} />
 						</h3>
 					</button>
 				{/each}
@@ -149,16 +153,16 @@
 		</div>
 	{:else}
 		<div class="my-auto">
-			<h1 class="text-4xl text-slate-900 select-none">Bienvenido a Nemsy</h1>
-			<hr class="text-slate-900 mb-8 border-1 border-slate-900" />
-			<p class="bg-zinc-200 border-l-4 border-slate-900 pl-4 py-2 rounded">
-				Si es su primer acceso es recomendable usar el correo institucional (por ejemplo:
+			<h1 class="text-4xl text-pastel-900 select-none">Bienvenido a Nemsy</h1>
+			<hr class="text-pastel-900 mb-8 border-1 border-lime-900" />
+			<p class="bg-lime-200 border-l-4 border-lime-900 pl-4 py-2 rounded">
+				Si es su primer acceso le rogamos usar el correo institucional (por ejemplo:
 				usuario@ucm.es), en caso de disponer de él, para facilitar el proceso de <i>onboarding</i>.
 			</p>
 			<div class="text-right mt-4">
 				<button
 					onclick={() => (window.location.href = `${env.PUBLIC_API_BASE_URL}/auth/login`)}
-					class="h-10 px-4 py-2 bg-rose-300 hover:brightness-90 border-zinc-900 border-2 rounded transition-colors inline-flex items-center cursor-pointer"
+					class="h-10 px-4 py-2 bg-orange-300 hover:brightness-90 border-zinc-900 border-2 rounded transition-colors inline-flex items-center cursor-pointer"
 				>
 					<svg
 						class="mr-2 ml-1 w-4 h-4"

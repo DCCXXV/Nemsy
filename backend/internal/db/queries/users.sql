@@ -2,9 +2,27 @@
 SELECT * FROM users
 WHERE id = $1 LIMIT 1;
 
+-- name: GetUserWithStudy :one
+SELECT
+    u.*,
+    s.id AS study_id_fk,
+    s.name AS study_name
+FROM users u
+LEFT JOIN studies s ON u.study_id = s.id
+WHERE u.id = $1 LIMIT 1;
+
 -- name: GetUserByEmail :one
 SELECT * FROM users
 WHERE email = $1 LIMIT 1;
+
+-- name: GetUserWithStudyByEmail :one
+SELECT
+    u.*,
+    s.id AS study_id_fk,
+    s.name AS study_name
+FROM users u
+LEFT JOIN studies s ON u.study_id = s.id
+WHERE u.email = $1 LIMIT 1;
 
 -- name: CreateUser :one
 INSERT INTO users (

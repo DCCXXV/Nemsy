@@ -6,6 +6,8 @@ package db
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Querier interface {
@@ -18,11 +20,14 @@ type Querier interface {
 	GetSubject(ctx context.Context, id int32) (Subject, error)
 	GetUser(ctx context.Context, id int32) (User, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
+	GetUserWithStudy(ctx context.Context, id int32) (GetUserWithStudyRow, error)
+	GetUserWithStudyByEmail(ctx context.Context, email string) (GetUserWithStudyByEmailRow, error)
 	ListResourcesByOwner(ctx context.Context, ownerID int32) ([]Resource, error)
 	ListResourcesBySubject(ctx context.Context, subjectID int32) ([]Resource, error)
 	ListResourcesBySubjectWithOwner(ctx context.Context, subjectID int32) ([]ListResourcesBySubjectWithOwnerRow, error)
 	ListStudies(ctx context.Context) ([]Study, error)
 	ListSubjects(ctx context.Context) ([]Subject, error)
+	ListSubjectsByStudy(ctx context.Context, studyID pgtype.Int4) ([]Subject, error)
 	UpdateUserStudy(ctx context.Context, arg UpdateUserStudyParams) (User, error)
 }
 

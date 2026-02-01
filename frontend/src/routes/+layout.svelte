@@ -4,6 +4,8 @@
 	import { clickOutside } from '$lib/actions/clickOutside';
 	import { page } from '$app/state';
 
+	import GraduationCapIcon from 'phosphor-svelte/lib/GraduationCapIcon';
+
 	let props = $props<{ data: LayoutData; children: () => unknown }>();
 
 	let isMenuOpen = $state(false);
@@ -29,7 +31,7 @@
 	{@render props.children?.()}
 {:else}
 	<div class="min-h-screen flex flex-col bg-zinc-100">
-		<div class="bg-pastel-200 bg-opacity-70 z-50 flex items-center justify-between px-4 py-2">
+		<div class="bg-oatmeal-200 bg-opacity-70 z-50 flex items-center justify-between px-4 py-2">
 			<div class="flex items-center">
 				<div class="relative" use:clickOutside onoutclick={closeMenu}>
 					<button
@@ -136,32 +138,10 @@
 	</div>
 
 	<footer
-		class="bg-pastel-200 text-pastel-950 p-10 flex flex-col md:flex-row justify-between gap-8"
+		class="bg-oatmeal-300 text-oatmeal-950 p-10 flex flex-col md:flex-row justify-between gap-8"
 	>
 		<aside class="flex flex-col md:flex-row items-start md:items-center gap-4 shrink-0">
-			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 279 279" width="64" height="64"
-				><defs></defs><g transform="matrix(1,0,0,1,-110.080572441,-110.080572441)">
-					<g>
-						<g>
-							<path
-								d="M110.08057244055081,110.08057244055163 L389.91942755944854,110.08057244055163 L389.91942755944876,389.91942755944933 L110.08057244055098,389.91942755944933 L110.08057244055081,110.08057244055163 Z"
-								transform="matrix(1,0,0,1,0,0)"
-								fill="#e2e8f0"
-								stroke="#62748e"
-								stroke-width="50"
-								stroke-linecap="round"
-								stroke-linejoin="round"
-							/>
-						</g>
-						<g>
-							<path
-								d="M181.34488238152414,183.1439145308349 C181.34488238152414,183.1439145308349 213.91808699217927,183.1439145308349 213.91808699217927,183.1439145308349 C213.91808699217927,183.1439145308349 298.7704510145223,254.40226741171577 298.7704510145223,254.40226741171577 C298.7704510145223,254.40226741171577 298.8657639760751,183.1439145308349 298.8657639760751,183.1439145308349 C298.8657639760751,183.1439145308349 318.6551176184665,183.1439145308349 318.6551176184665,183.1439145308349 C318.6551176184665,183.1439145308349 318.6551176184665,316.8560854691606 318.6551176184665,316.8560854691606 C318.6551176184665,316.8560854691606 286.08191300781135,316.8560854691606 286.08191300781135,316.8560854691606 C286.08191300781135,316.8560854691606 201.14615014410964,245.85984323254982 201.14615014410964,245.85984323254982 C201.14615014410964,245.85984323254982 201.14615014410964,316.8560854691606 201.14615014410964,316.8560854691606 C201.14615014410964,316.8560854691606 181.34488238152414,316.8560854691606 181.34488238152414,316.8560854691606 C181.34488238152414,316.8560854691606 181.34488238152414,183.1439145308349 181.34488238152414,183.1439145308349 Z"
-								fill="#62748e"
-							/>
-						</g>
-					</g></g
-				></svg
-			>
+			<GraduationCapIcon class="size-16" />
 			<p class="text-sm">
 				nemsy.org
 				<br />
@@ -170,37 +150,37 @@
 		</aside>
 
 		<nav class="flex flex-grow flex-col gap-2 flex-1 sm:flex-none">
-			<h6 class="text-sm font-bold tracking-wide text-pastel-600 uppercase">Información</h6>
+			<h6 class="text-sm font-bold tracking-wide text-oatmeal-600 uppercase">Información</h6>
 			<a
 				href="#"
-				class="text-pastel-800 hover:text-pastel-900 hover:underline transition-colors no-underline"
+				class="text-oatmeal-800 hover:text-oatmeal-900 hover:underline transition-colors no-underline"
 			>
 				Sobre nosotros
 			</a>
 			<a
 				href="#"
-				class="text-pastel-800 hover:text-pastel-900 hover:underline transition-colors no-underline"
+				class="text-oatmeal-800 hover:text-oatmeal-900 hover:underline transition-colors no-underline"
 			>
 				Contacto
 			</a>
 		</nav>
 		<nav class="flex flex-col gap-2 flex-1 sm:flex-none">
-			<h6 class="text-sm font-bold tracking-wide text-pastel-600 uppercase">Legal</h6>
+			<h6 class="text-sm font-bold tracking-wide text-oatmeal-600 uppercase">Legal</h6>
 			<a
 				href="/tos"
-				class="text-pastel-800 hover:text-pastel-900 hover:underline transition-colors no-underline"
+				class="text-oatmeal-800 hover:text-oatmeal-900 hover:underline transition-colors no-underline"
 			>
 				Términos de uso
 			</a>
 			<a
 				href="/privacy"
-				class="text-pastel-800 hover:text-pastel-900 hover:underline transition-colors no-underline"
+				class="text-oatmeal-800 hover:text-oatmeal-900 hover:underline transition-colors no-underline"
 			>
 				Política de privacidad
 			</a>
 			<a
 				href="/cookies"
-				class="text-pastel-800 hover:text-pastel-900 hover:underline transition-colors no-underline"
+				class="text-oatmeal-800 hover:text-oatmeal-900 hover:underline transition-colors no-underline"
 			>
 				Política de Cookies
 			</a>

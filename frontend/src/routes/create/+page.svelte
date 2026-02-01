@@ -7,15 +7,25 @@
 	import CaretDoubleUp from 'phosphor-svelte/lib/CaretDoubleUp';
 	import CaretDoubleDown from 'phosphor-svelte/lib/CaretDoubleDown';
 	import CloudArrowUp from 'phosphor-svelte/lib/CloudArrowUp';
+	import { PUBLIC_API_BASE_URL } from '$env/static/public';
+	import { goto } from '$app/navigation';
 
-	const subjects = [
-		{ value: 'modelado-software', label: 'Modelado de Software' },
-		{ value: 'fundamentos-algoritmia', label: 'Fundamentos de la Algoritmia' },
-		{ value: 'aplicaciones-web', label: 'Aplicaciones Web' },
-		{ value: 'programacion-evolutiva', label: 'Programación evolutiva' }
-	];
+	let { data } = $props();
 
+	let title = $state('');
+	let selectedSubject = $state<string | undefined>(undefined);
+	let description = $state('');
+	let files = $state<File[]>([]);
 	let searchValue = $state('');
+	let isSubmitting = $state(false);
+	let error = $state('');
+
+	const subjects = $derived(
+		data.subjects.map((s) => ({
+			value: String(s.id),
+			label: s.name
+		}))
+	);
 
 	const filteredSubjects = $derived(
 		searchValue === ''
@@ -24,23 +34,69 @@
 					subject.label.toLowerCase().includes(searchValue.toLowerCase())
 				)
 	);
+
+	async function handleSubmit() {
+		if (!title.trim() || !selectedSubject || files.length === 0) {
+			error = 'Por favor, completa todos los campos obligatorios.';
+			return;
+		}
+
+		isSubmitting = true;
+		error = '';
+
+		const formData = new FormData();
+		formData.append('title', title);
+		formData.append('subjectId', selectedSubject);
+		formData.append('file', files[0]);
+		if (description.trim()) {
+			formData.append('description', description);
+		}
+
+		try {
+			const res = await fetch(`${PUBLIC_API_BASE_URL}/api/resources`, {
+				method: 'POST',
+				credentials: 'include',
+				body: formData
+			});
+
+			if (res.ok) {
+				goto('/');
+			} else {
+				const text = await res.text();
+				error = text || 'Error al subir el recurso.';
+			}
+		} catch (err) {
+			error = 'Error de conexion.';
+		} finally {
+			isSubmitting = false;
+		}
+	}
 </script>
 
-<div class="bg-pastel-200 flex items-start justify-center pt-4 pb-6 h-screen">
+<div class="bg-oatmeal-200 flex items-start justify-center pt-4 pb-6 min-h-screen">
 	<div class="bg-zinc-100 border-2 border-zinc-900 rounded w-3/7 ml-4 p-4">
+		{#if error}
+			<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-4">
+				{error}
+			</div>
+		{/if}
+
 		<div class="flex flex-col mb-4">
-			<label for="title">Título*</label>
+			<label for="title">Titulo*</label>
 			<input
 				name="title"
-				placeholder="Título del recurso"
+				placeholder="Titulo del recurso"
+				bind:value={title}
 				class="bg-zinc-100 border-2 border-zinc-900 p-2 rounded focus:outline-none focus:ring-2 focus:ring-zinc-400"
 			/>
 		</div>
+
 		<div class="flex flex-col mb-4">
 			<label>Asignatura*</label>
 			<Combobox.Root
 				type="single"
 				name="subject"
+				bind:value={selectedSubject}
 				onOpenChangeComplete={(o) => {
 					if (!o) searchValue = '';
 				}}
@@ -68,7 +124,7 @@
 							<CaretDoubleUp class="size-4" />
 						</Combobox.ScrollUpButton>
 						<Combobox.Viewport class="p-1">
-							{#each filteredSubjects as subject, i (i + subject.value)}
+							{#each filteredSubjects as subject (subject.value)}
 								<Combobox.Item
 									class="flex items-center px-3 py-2 text-sm rounded cursor-pointer select-none data-[highlighted]:bg-zinc-200 data-[state=checked]:bg-zinc-300"
 									value={subject.value}
@@ -99,15 +155,24 @@
 
 		<div class="flex flex-col mb-4">
 			<span>Archivo*</span>
-			<FileUpload>
+			<FileUpload
+				onFilesChange={(newFiles) => {
+					files = newFiles;
+				}}
+			>
 				{#snippet children(fileUpload)}
 					<input {...fileUpload.input} />
 					<div
 						{...fileUpload.dropzone}
 						class="p-8 text-center border-2 border-dashed border-zinc-900 cursor-pointer"
 					>
-						{#if fileUpload.isDragging}
-							Arrastra los archivos aquí
+						{#if files.length > 0}
+							<p class="font-medium">{files[0].name}</p>
+							<p class="text-sm text-zinc-500">
+								{(files[0].size / 1024 / 1024).toFixed(2)} MB
+							</p>
+						{:else if fileUpload.isDragging}
+							Arrastra los archivos aqui
 						{:else}
 							<CloudArrowUp class="mx-auto size-8" />
 							Clica o arrastra para subir tus archivos
@@ -118,15 +183,21 @@
 		</div>
 
 		<div class="flex flex-col">
-			<label for="title">Descripción (Opcional)</label>
+			<label for="description">Descripcion (Opcional)</label>
 			<textarea
-				name="title"
+				name="description"
+				bind:value={description}
 				placeholder="Describe el recurso que vas a subir para ayudar a que otros estudiantes entiendan de que se trata."
 				class="bg-zinc-100 border-2 border-zinc-900 p-2 rounded focus:outline-none focus:ring-2 focus:ring-zinc-400"
 			/>
 		</div>
-		<button class="bg-zinc-900 text-zinc-100 px-6 py-2 mt-4 rounded cursor-pointer">
-			Subir Recurso
+
+		<button
+			onclick={handleSubmit}
+			disabled={isSubmitting}
+			class="bg-zinc-900 text-zinc-100 px-6 py-2 mt-4 rounded cursor-pointer hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed"
+		>
+			{isSubmitting ? 'Subiendo...' : 'Subir Recurso'}
 		</button>
 	</div>
 </div>
