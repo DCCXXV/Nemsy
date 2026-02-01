@@ -4,9 +4,12 @@
 	import CaretUpDown from 'phosphor-svelte/lib/CaretUpDown';
 	import Check from 'phosphor-svelte/lib/Check';
 	import Book from 'phosphor-svelte/lib/Book';
+
 	import CaretDoubleUp from 'phosphor-svelte/lib/CaretDoubleUp';
 	import CaretDoubleDown from 'phosphor-svelte/lib/CaretDoubleDown';
 	import CloudArrowUp from 'phosphor-svelte/lib/CloudArrowUp';
+	import XIcon from 'phosphor-svelte/lib/XIcon';
+
 	import { PUBLIC_API_BASE_URL } from '$env/static/public';
 	import { goto } from '$app/navigation';
 
@@ -15,8 +18,16 @@
 	let title = $state('');
 	let selectedSubject = $state<string | undefined>(undefined);
 	let description = $state('');
-	let files = $state<File[]>([]);
+	let selectedFile = $state<File | undefined>(undefined);
 	let searchValue = $state('');
+
+	const fileInfo = $derived.by(() => {
+		if (!selectedFile) return null;
+		const name = selectedFile.name;
+		const ext = name.includes('.') ? (name.split('.').pop()?.toUpperCase() ?? '') : '';
+		const sizeMB = (selectedFile.size / 1024 / 1024).toFixed(2);
+		return { name, ext, sizeMB };
+	});
 	let isSubmitting = $state(false);
 	let error = $state('');
 
@@ -36,7 +47,7 @@
 	);
 
 	async function handleSubmit() {
-		if (!title.trim() || !selectedSubject || files.length === 0) {
+		if (!title.trim() || !selectedSubject || !selectedFile) {
 			error = 'Por favor, completa todos los campos obligatorios.';
 			return;
 		}
@@ -47,7 +58,7 @@
 		const formData = new FormData();
 		formData.append('title', title);
 		formData.append('subjectId', selectedSubject);
-		formData.append('file', files[0]);
+		formData.append('file', selectedFile);
 		if (description.trim()) {
 			formData.append('description', description);
 		}
@@ -155,31 +166,47 @@
 
 		<div class="flex flex-col mb-4">
 			<span>Archivo*</span>
-			<FileUpload
-				onFilesChange={(newFiles) => {
-					files = newFiles;
-				}}
-			>
-				{#snippet children(fileUpload)}
-					<input {...fileUpload.input} />
-					<div
-						{...fileUpload.dropzone}
-						class="p-8 text-center border-2 border-dashed border-zinc-900 cursor-pointer"
+			{#if fileInfo}
+				<div class="flex items-center gap-3 mt-2 p-3 bg-zinc-100 border-2 border-zinc-900 rounded">
+					<span class="flex-1 truncate text-sm font-medium">{fileInfo.name}</span>
+					<span
+						class="px-2 py-0.5 bg-lime-200 text-lime-700 text-xs font-semibold rounded uppercase"
 					>
-						{#if files.length > 0}
-							<p class="font-medium">{files[0].name}</p>
-							<p class="text-sm text-zinc-500">
-								{(files[0].size / 1024 / 1024).toFixed(2)} MB
-							</p>
-						{:else if fileUpload.isDragging}
-							Arrastra los archivos aqui
-						{:else}
-							<CloudArrowUp class="mx-auto size-8" />
-							Clica o arrastra para subir tus archivos
-						{/if}
-					</div>
-				{/snippet}
-			</FileUpload>
+						{fileInfo.ext}
+					</span>
+					<span
+						class="px-2 py-0.5 bg-amber-200 text-amber-700 text-xs font-semibold rounded uppercase"
+					>
+						{fileInfo.sizeMB} MB
+					</span>
+					<button
+						type="button"
+						onclick={() => (selectedFile = undefined)}
+						class="text-zinc-500 hover:text-rose-500 cursor-pointer"
+						aria-label="Eliminar archivo"
+					>
+						<XIcon />
+					</button>
+				</div>
+			{:else}
+				<FileUpload bind:selected={selectedFile}>
+					{#snippet children(fileUpload)}
+						<input {...fileUpload.input} />
+						<div
+							{...fileUpload.dropzone}
+							class="p-8 text-center border-2 border-dashed border-zinc-900 rounded cursor-pointer hover:bg-zinc-50 transition-colors"
+						>
+							{#if fileUpload.isDragging}
+								<CloudArrowUp class="mx-auto size-8 text-zinc-700" />
+								Suelta el archivo aqui
+							{:else}
+								<CloudArrowUp class="mx-auto size-8" />
+								Clica o arrastra para subir tu archivo
+							{/if}
+						</div>
+					{/snippet}
+				</FileUpload>
+			{/if}
 		</div>
 
 		<div class="flex flex-col">
