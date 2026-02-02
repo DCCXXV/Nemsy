@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { Combobox } from 'bits-ui';
 	import { FileUpload } from 'melt/components';
-	import CaretUpDown from 'phosphor-svelte/lib/CaretUpDown';
+	import CaretUpDownIcon from 'phosphor-svelte/lib/CaretUpDownIcon';
 	import Check from 'phosphor-svelte/lib/Check';
-	import Book from 'phosphor-svelte/lib/Book';
+	import BookIcon from 'phosphor-svelte/lib/BookIcon';
 
-	import CaretDoubleUp from 'phosphor-svelte/lib/CaretDoubleUp';
-	import CaretDoubleDown from 'phosphor-svelte/lib/CaretDoubleDown';
-	import CloudArrowUp from 'phosphor-svelte/lib/CloudArrowUp';
+	import CaretDoubleUpIcon from 'phosphor-svelte/lib/CaretDoubleUpIcon';
+	import CaretDoubleDownIcon from 'phosphor-svelte/lib/CaretDoubleDownIcon';
+	import CloudArrowUpIcon from 'phosphor-svelte/lib/CloudArrowUpIcon';
 	import XIcon from 'phosphor-svelte/lib/XIcon';
 
 	import { PUBLIC_API_BASE_URL } from '$env/static/public';
@@ -84,7 +84,7 @@
 	}
 </script>
 
-<div class="bg-oatmeal-200 flex items-start justify-center pt-4 pb-6 min-h-screen">
+<div class="bg-zinc-200 flex items-start justify-center pt-4 pb-6 min-h-screen">
 	<div class="bg-zinc-100 border-2 border-zinc-900 rounded w-3/7 ml-4 p-4">
 		{#if error}
 			<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-4">
@@ -103,7 +103,7 @@
 		</div>
 
 		<div class="flex flex-col mb-4">
-			<label>Asignatura*</label>
+			<p>Asignatura*</p>
 			<Combobox.Root
 				type="single"
 				name="subject"
@@ -113,7 +113,7 @@
 				}}
 			>
 				<div class="relative">
-					<Book class="absolute left-3 top-1/2 size-5 -translate-y-1/2 text-zinc-900" />
+					<BookIcon class="absolute left-3 top-1/2 size-5 -translate-y-1/2 text-zinc-900" />
 					<Combobox.Input
 						oninput={(e) => (searchValue = e.currentTarget.value)}
 						class="w-full h-10 pl-10 pr-10 bg-zinc-100 border-2 border-zinc-900 rounded text-sm placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-400"
@@ -121,7 +121,7 @@
 						aria-label="Buscar asignatura"
 					/>
 					<Combobox.Trigger class="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer">
-						<CaretUpDown class="size-5 text-zinc-500" />
+						<CaretUpDownIcon class="size-5 text-zinc-500" />
 					</Combobox.Trigger>
 				</div>
 				<Combobox.Portal>
@@ -132,7 +132,7 @@
 						<Combobox.ScrollUpButton
 							class="flex w-full items-center justify-center py-1 text-zinc-500 hover:text-zinc-700"
 						>
-							<CaretDoubleUp class="size-4" />
+							<CaretDoubleUpIcon class="size-4" />
 						</Combobox.ScrollUpButton>
 						<Combobox.Viewport class="p-1">
 							{#each filteredSubjects as subject (subject.value)}
@@ -157,7 +157,7 @@
 						<Combobox.ScrollDownButton
 							class="flex w-full items-center justify-center py-1 text-zinc-500 hover:text-zinc-700"
 						>
-							<CaretDoubleDown class="size-4" />
+							<CaretDoubleDownIcon class="size-4" />
 						</Combobox.ScrollDownButton>
 					</Combobox.Content>
 				</Combobox.Portal>
@@ -197,10 +197,10 @@
 							class="p-8 text-center border-2 border-dashed border-zinc-900 rounded cursor-pointer hover:bg-zinc-50 transition-colors"
 						>
 							{#if fileUpload.isDragging}
-								<CloudArrowUp class="mx-auto size-8 text-zinc-700" />
+								<CloudArrowUpIcon class="mx-auto size-8 text-zinc-700" />
 								Suelta el archivo aqui
 							{:else}
-								<CloudArrowUp class="mx-auto size-8" />
+								<CloudArrowUpIcon class="mx-auto size-8" />
 								Clica o arrastra para subir tu archivo
 							{/if}
 						</div>
@@ -216,7 +216,7 @@
 				bind:value={description}
 				placeholder="Describe el recurso que vas a subir para ayudar a que otros estudiantes entiendan de que se trata."
 				class="bg-zinc-100 border-2 border-zinc-900 p-2 rounded focus:outline-none focus:ring-2 focus:ring-zinc-400"
-			/>
+			></textarea>
 		</div>
 
 		<button

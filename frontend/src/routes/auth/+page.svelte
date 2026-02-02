@@ -146,7 +146,7 @@
 		<div class="w-full text-right absolute bottom-0 ml-auto">
 			<button
 				onclick={() => finish(selectedStudy)}
-				class="h-10 px-10 py-2 bg-rose-300 hover:brightness-90 border-zinc-900 border-2 rounded transition-colors inline-flex items-center cursor-pointer text-lg"
+				class="h-10 px-10 py-2 bg-orange-300 hover:brightness-90 border-zinc-900 border-2 rounded transition-colors inline-flex items-center cursor-pointer text-lg"
 			>
 				Terminar
 			</button>
@@ -154,8 +154,8 @@
 	{:else}
 		<div class="my-auto">
 			<h1 class="text-4xl text-pastel-900 select-none">Bienvenido a Nemsy</h1>
-			<hr class="text-pastel-900 mb-8 border-1 border-lime-900" />
-			<p class="bg-lime-200 border-l-4 border-lime-900 pl-4 py-2 rounded">
+			<hr class="text-pastel-900 mb-8 border border-zinc-900" />
+			<p class="bg-zinc-200 border-l-4 border-zinc-900 pl-4 py-2 rounded">
 				Si es su primer acceso le rogamos usar el correo institucional (por ejemplo:
 				usuario@ucm.es), en caso de disponer de él, para facilitar el proceso de <i>onboarding</i>.
 			</p>

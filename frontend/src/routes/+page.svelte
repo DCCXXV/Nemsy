@@ -52,7 +52,7 @@
 </script>
 
 {#if data.me}
-	<div class="bg-oatmeal-200 flex items-start justify-center pt-4 pb-6">
+	<div class="bg-zinc-200 flex items-start justify-center pt-4 pb-6">
 		<div class="bg-zinc-100 border-2 border-zinc-900 rounded w-1/4 ml-4 sticky top-4">
 			<div class="p-2 flex gap-4 items-center border-b-2 border-zinc-900">
 				<img
@@ -125,8 +125,8 @@
 		<div class="bg-zinc-100 border-2 border-zinc-900 rounded w-1/4 mr-4 h-24 sticky top-4"></div>
 	</div>
 {:else}
-	<div class="relative min-h-screen bg-oatmeal-100 flex justify-center items-center">
-		<div class="absolute inset-x-0 top-0 h-[calc(3/7*100vh)] bg-oatmeal-200 z-0"></div>
+	<div class="relative min-h-screen bg-zinc-100 flex justify-center items-center">
+		<div class="absolute inset-x-0 top-0 h-[calc(3/7*100vh)] bg-zinc-200 z-0"></div>
 
 		<div
 			class="relative z-10 flex flex-col lg:flex-row w-full max-w-6xl p-4 lg:p-0 mt-24 lg:mt-0 mb-24"
@@ -137,7 +137,7 @@
 				<div
 					class="max-w-md flex flex-col items-center lg:items-start text-left mx-auto lg:mx-0 w-full p-4"
 				>
-					<h1 class="text-5xl font-bold text-oatmeal-700">nemsy</h1>
+					<h1 class="text-5xl font-bold text-zinc-700">nemsy</h1>
 					<p class="py-6">
 						Comparte y accede a <mark>apuntes universitarios</mark> con facilidad. Todo lo que necesitas
 						para estudiar mejor, en un solo lugar.

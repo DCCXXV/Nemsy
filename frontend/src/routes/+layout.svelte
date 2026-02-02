@@ -5,6 +5,7 @@
 	import { page } from '$app/state';
 
 	import GraduationCapIcon from 'phosphor-svelte/lib/GraduationCapIcon';
+	import ListIcon from 'phosphor-svelte/lib/ListIcon';
 
 	let props = $props<{ data: LayoutData; children: () => unknown }>();
 
@@ -18,14 +19,14 @@
 </script>
 
 <svelte:head>
-	<link rel="icon" href="/favicon.png" />
+	<link rel="icon" href="/favicon.svg" />
 </svelte:head>
 
 {#if currentPath.includes('/auth')}
 	{@render props.children?.()}
 {:else}
 	<div class="min-h-screen flex flex-col bg-zinc-100">
-		<div class="bg-oatmeal-200 bg-opacity-70 z-50 flex items-center justify-between px-4 py-2">
+		<div class="bg-zinc-200 bg-opacity-70 z-50 flex items-center justify-between px-4 py-2">
 			<div class="flex items-center">
 				<div class="relative" use:clickOutside onoutclick={closeMenu}>
 					<button
@@ -33,20 +34,7 @@
 						class="lg:hidden h-10 px-2 py-2 mr-2 rounded bg-zinc-100 border-2 border-zinc-900 transition-colors inline-flex items-center cursor-pointer hover:bg-zinc-200"
 						onclick={() => (isMenuOpen = !isMenuOpen)}
 					>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							class="h-5 w-5"
-							fill="none"
-							viewBox="0 0 24 24"
-							stroke="currentColor"
-						>
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M4 6h16M4 12h8m-8 6h16"
-							/>
-						</svg>
+						<ListIcon />
 					</button>
 					{#if isMenuOpen}
 						<ul
@@ -55,8 +43,7 @@
 							<li><a class="block px-4 py-2 hover:bg-zinc-200 rounded" href="/">Inicio</a></li>
 							<li><a class="block px-4 py-2 hover:bg-zinc-200 rounded" href="#">Buscar</a></li>
 							<li>
-								<a class="block px-4 py-2 hover:bg-zinc-200 rounded" href="/create">Crear Recurso</a
-								>
+								<a class="block px-4 py-2 hover:bg-zinc-200 rounded" href="/create">Crear</a>
 							</li>
 						</ul>
 					{/if}
@@ -64,9 +51,11 @@
 
 				<a
 					href="/"
-					class="h-10 text-xl text-zinc-900 font-bold px-4 py-2 bg-zinc-100 hover:brightness-90 border-2 border-zinc-900 rounded transition-colors inline-flex items-center cursor-pointer"
-					>nemsy</a
+					class="h-10 text-2xl text-zinc-700 font-bold px-4 py-2 transition-colors inline-flex items-center cursor-pointer"
 				>
+					<img src="/favicon.svg" alt="Logo" class="size-6 mr-3" />
+					nemsy
+				</a>
 			</div>
 
 			<div class="hidden lg:flex flex-1 justify-center">
@@ -79,12 +68,13 @@
 							>Inicio
 						</a>
 					</li>
+					<!--
 					<li>
 						<a
 							class="cursor-not-allowed h-10 flex items-center px-6 py-2 hover:bg-zinc-200 rounded transition-colors"
 							href="#">Buscar</a
 						>
-					</li>
+					</li>-->
 					<li>
 						<a
 							class="h-10 flex items-center px-6 py-2 hover:bg-zinc-200 rounded transition-colors
@@ -131,50 +121,50 @@
 		{@render props.children?.()}
 	</div>
 
-	<footer
-		class="bg-oatmeal-300 text-oatmeal-950 p-10 flex flex-col md:flex-row justify-between gap-8"
-	>
+	<footer class="bg-zinc-300 text-zinc-950 p-10 flex flex-col md:flex-row justify-between gap-8">
 		<aside class="flex flex-col md:flex-row items-start md:items-center gap-4 shrink-0">
-			<GraduationCapIcon class="size-16" />
+			<img src="/favicon.svg" alt="Logo" class="size-16 mr-3 grayscale" />
 			<p class="text-sm">
 				nemsy.org
 				<br />
-				Recursos académicos compartidos por y para estudiantes.
+				<span class="text-zinc-700 italic"
+					>Recursos académicos compartidos por y para estudiantes</span
+				>
 			</p>
 		</aside>
 
-		<nav class="flex flex-grow flex-col gap-2 flex-1 sm:flex-none">
-			<h6 class="text-sm font-bold tracking-wide text-oatmeal-600 uppercase">Información</h6>
+		<nav class="flex grow flex-col gap-2 flex-1 sm:flex-none">
+			<h6 class="text-sm font-bold tracking-wide text-zinc-600 uppercase">Información</h6>
 			<a
 				href="#"
-				class="text-oatmeal-800 hover:text-oatmeal-900 hover:underline transition-colors no-underline"
+				class="text-zinc-800 hover:text-zinc-900 hover:underline transition-colors no-underline"
 			>
 				Sobre nosotros
 			</a>
 			<a
 				href="#"
-				class="text-oatmeal-800 hover:text-oatmeal-900 hover:underline transition-colors no-underline"
+				class="text-zinc-800 hover:text-zinc-900 hover:underline transition-colors no-underline"
 			>
 				Contacto
 			</a>
 		</nav>
 		<nav class="flex flex-col gap-2 flex-1 sm:flex-none">
-			<h6 class="text-sm font-bold tracking-wide text-oatmeal-600 uppercase">Legal</h6>
+			<h6 class="text-sm font-bold tracking-wide text-zinc-600 uppercase">Legal</h6>
 			<a
 				href="/tos"
-				class="text-oatmeal-800 hover:text-oatmeal-900 hover:underline transition-colors no-underline"
+				class="text-zinc-800 hover:text-zinc-900 hover:underline transition-colors no-underline"
 			>
 				Términos de uso
 			</a>
 			<a
 				href="/privacy"
-				class="text-oatmeal-800 hover:text-oatmeal-900 hover:underline transition-colors no-underline"
+				class="text-zinc-800 hover:text-zinc-900 hover:underline transition-colors no-underline"
 			>
 				Política de privacidad
 			</a>
 			<a
 				href="/cookies"
-				class="text-oatmeal-800 hover:text-oatmeal-900 hover:underline transition-colors no-underline"
+				class="text-zinc-800 hover:text-zinc-900 hover:underline transition-colors no-underline"
 			>
 				Política de Cookies
 			</a>
