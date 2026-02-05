@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/DCCXXV/Nemsy/backend/internal/app"
 	"github.com/DCCXXV/Nemsy/backend/internal/auth"
 	db "github.com/DCCXXV/Nemsy/backend/internal/db/generated"
+	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
@@ -19,7 +21,7 @@ func NewHandler(a *app.App) *Handler {
 	return &Handler{app: a}
 }
 
-type MeResponse struct {
+type UserResponse struct {
 	ID        int32   `json:"id"`
 	Email     string  `json:"email"`
 	FullName  *string `json:"fullName,omitempty"`
@@ -42,7 +44,7 @@ func (h *Handler) MeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp := MeResponse{
+	resp := UserResponse{
 		ID:    user.ID,
 		Email: user.Email,
 	}
@@ -143,6 +145,41 @@ func (h *Handler) MySubjects(w http.ResponseWriter, r *http.Request) {
 		if s.Year.Valid {
 			resp[i].Year = s.Year.String
 		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(resp)
+}
+
+func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
+	idStr := chi.URLParam(r, "id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "invalid id", http.StatusBadRequest)
+		return
+	}
+
+	user, err := h.app.Queries.GetUser(r.Context(), int32(id))
+	if err != nil {
+		http.Error(w, "user not found", http.StatusNotFound)
+		return
+	}
+
+	resp := UserResponse{
+		ID:    user.ID,
+		Email: user.Email,
+	}
+	if user.FullName.Valid {
+		resp.FullName = &user.FullName.String
+	}
+	if user.Pfp.Valid {
+		resp.Pfp = &user.Pfp.String
+	}
+	if user.Hd.Valid {
+		resp.Hd = &user.Hd.String
+	}
+	if user.StudyID.Valid {
+		resp.StudyID = &user.StudyID.Int32
 	}
 
 	w.Header().Set("Content-Type", "application/json")

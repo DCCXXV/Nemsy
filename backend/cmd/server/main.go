@@ -90,6 +90,8 @@ func main() {
 		protected.Put("/api/me/study", usersHandler.UpdateUserStudy)
 		protected.Get("/api/me/subjects", usersHandler.MySubjects)
 
+		protected.Get("/api/users/{id}", usersHandler.Get)
+
 		protected.Get("/api/studies", studiesHandler.ListStudies)
 
 		protected.Post("/api/resources", resourcesHandler.Create)

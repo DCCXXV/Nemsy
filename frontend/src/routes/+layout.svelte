@@ -4,7 +4,6 @@
 	import { clickOutside } from '$lib/actions/clickOutside';
 	import { page } from '$app/state';
 
-	import GraduationCapIcon from 'phosphor-svelte/lib/GraduationCapIcon';
 	import ListIcon from 'phosphor-svelte/lib/ListIcon';
 
 	let props = $props<{ data: LayoutData; children: () => unknown }>();
@@ -26,7 +25,7 @@
 	{@render props.children?.()}
 {:else}
 	<div class="min-h-screen flex flex-col bg-zinc-100">
-		<div class="bg-zinc-200 bg-opacity-70 z-50 flex items-center justify-between px-4 py-2">
+		<div class="bg-zinc-100 bg-opacity-70 z-50 flex items-center justify-between px-4 py-2">
 			<div class="flex items-center">
 				<div class="relative" use:clickOutside onoutclick={closeMenu}>
 					<button
@@ -59,7 +58,7 @@
 			</div>
 
 			<div class="hidden lg:flex flex-1 justify-center">
-				<ul class="flex list-none bg-zinc-100 border-2 border-zinc-900 rounded">
+				<ul class="flex list-none bg-zinc-100 border-1 border-zinc-900 rounded">
 					<li>
 						<a
 							class="h-10 flex items-center px-6 py-2 hover:bg-zinc-200 rounded transition-colors
@@ -88,7 +87,7 @@
 			<div class="flex-none flex flex-row items-center gap-4">
 				{#if props.data.me}
 					<div
-						class="h-10 flex items-center px-4 py-2 bg-zinc-100 text-zinc-900 border-zinc-900 border-2 rounded"
+						class="h-10 flex items-center px-4 py-2 bg-zinc-100 text-zinc-900 border-zinc-900 border-1 rounded"
 					>
 						{props.data.me?.email?.split('@')[0]}
 					</div>
@@ -121,7 +120,7 @@
 		{@render props.children?.()}
 	</div>
 
-	<footer class="bg-zinc-300 text-zinc-950 p-10 flex flex-col md:flex-row justify-between gap-8">
+	<footer class="bg-zinc-200 text-zinc-950 p-10 flex flex-col md:flex-row justify-between gap-8">
 		<aside class="flex flex-col md:flex-row items-start md:items-center gap-4 shrink-0">
 			<img src="/favicon.svg" alt="Logo" class="size-16 mr-3 grayscale" />
 			<p class="text-sm">
