@@ -3,6 +3,7 @@
 @plugin '@tailwindcss/typography';
 @import '@fontsource/lato/400.css';
 
+/*
 @theme {
 	--color-oatmeal-50: oklch(0.957 0.002 18);
 	--color-oatmeal-100: oklch(0.922 0.005 0.44);
@@ -15,18 +16,23 @@
 	--color-oatmeal-800: oklch(0.322 0.021 8.71);
 	--color-oatmeal-900: oklch(0.225 0.015 3.49);
 	--color-oatmeal-950: oklch(0.178 0.012 8.78);
-}
+}*/
 
 html {
-	font-family: 'Lato', sans-serif;
+	font-family: 'Google Sans Flex', sans-serif;
 	font-optical-sizing: auto;
 	font-weight: 400;
 	font-style: normal;
+	font-variation-settings:
+		'slnt' 0,
+		'wdth' 100,
+		'GRAD' 0,
+		'ROND' 0;
 }
 
 ::selection {
-	background: var(--color-amber-200);
-	color: var(--color-amber-900);
+	background: var(--color-indigo-200);
+	color: var(--color-indigo-900);
 }
 
 mark {

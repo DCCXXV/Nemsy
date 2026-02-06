@@ -84,10 +84,14 @@
 	}
 </script>
 
-<div class="bg-zinc-100 flex items-start justify-center pt-4 pb-6 min-h-screen">
-	<div class="bg-zinc-50 border border-zinc-900 rounded w-3/7 ml-4 p-4">
+<div
+	class="bg-zinc-100 flex items-start justify-center pt-4 pb-6 min-h-screen relative overflow-hidden"
+>
+	<img src="/img/tree.svg" alt="" class="absolute -bottom-46 right-12 w-250 pointer-events-none" />
+
+	<div class="relative z-10 bg-zinc-50 border border-zinc-300 rounded-none w-3/7 ml-4 p-4">
 		{#if error}
-			<div class="bg-red-100 border border-red-400 text-red-950 px-4 py-2 rounded mb-4">
+			<div class="bg-red-100 border border-red-400 text-red-950 px-4 py-2 rounded-none mb-4">
 				{error}
 			</div>
 		{/if}
@@ -98,7 +102,7 @@
 				name="title"
 				placeholder="Titulo del recurso"
 				bind:value={title}
-				class="bg-zinc-100 border border-zinc-300 p-2 rounded focus:outline-none focus:border-blue-300 focus:bg-blue-50"
+				class="bg-zinc-100 border border-zinc-300 p-2 rounded-none focus:outline-none focus:border-lime-300"
 			/>
 		</div>
 
@@ -116,7 +120,7 @@
 					<BookIcon class="absolute left-3 top-1/2 size-5 -translate-y-1/2 text-zinc-900" />
 					<Combobox.Input
 						oninput={(e) => (searchValue = e.currentTarget.value)}
-						class="w-full h-10 pl-10 pr-10 bg-zinc-100 border border-zinc-300 rounded text-sm placeholder:text-zinc-400 focus:outline-none focus:border-blue-300 focus:bg-blue-50"
+						class="w-full h-10 pl-10 pr-10 bg-zinc-100 border border-zinc-300 rounded-none text-sm placeholder:text-zinc-400 focus:outline-none focus:border-lime-300"
 						placeholder="Buscar asignatura"
 						aria-label="Buscar asignatura"
 					/>
@@ -126,7 +130,7 @@
 				</div>
 				<Combobox.Portal>
 					<Combobox.Content
-						class="z-50 bg-zinc-100 border border-zinc-300 rounded max-h-64 overflow-hidden"
+						class="z-50 bg-zinc-100 border border-zinc-300 rounded-none max-h-64 overflow-hidden"
 						sideOffset={8}
 					>
 						<Combobox.ScrollUpButton
@@ -137,7 +141,7 @@
 						<Combobox.Viewport class="p-1">
 							{#each filteredSubjects as subject (subject.value)}
 								<Combobox.Item
-									class="flex items-center px-3 py-2 text-sm rounded cursor-pointer select-none data-[highlighted]:bg-zinc-200 data-[state=checked]:bg-zinc-200"
+									class="flex items-center px-3 py-2 text-sm rounded-none cursor-pointer select-none data-[highlighted]:bg-zinc-200 data-[state=checked]:bg-zinc-200"
 									value={subject.value}
 									label={subject.label}
 								>
@@ -167,15 +171,17 @@
 		<div class="flex flex-col mb-4">
 			<span>Archivo*</span>
 			{#if fileInfo}
-				<div class="flex items-center gap-3 mt-2 p-3 bg-zinc-100 border border-zinc-300 rounded">
+				<div
+					class="flex items-center gap-3 mt-2 p-3 bg-zinc-100 border border-zinc-300 rounded-none"
+				>
 					<span class="flex-1 truncate text-sm font-medium">{fileInfo.name}</span>
 					<span
-						class="px-2 py-0.5 bg-lime-200 text-lime-700 text-xs font-semibold rounded uppercase"
+						class="px-2 py-0.5 bg-lime-200 text-lime-700 text-xs font-semibold rounded-none uppercase"
 					>
 						{fileInfo.ext}
 					</span>
 					<span
-						class="px-2 py-0.5 bg-amber-200 text-amber-700 text-xs font-semibold rounded uppercase"
+						class="px-2 py-0.5 bg-amber-200 text-amber-700 text-xs font-semibold rounded-none uppercase"
 					>
 						{fileInfo.sizeMB} MB
 					</span>
@@ -194,7 +200,7 @@
 						<input {...fileUpload.input} />
 						<div
 							{...fileUpload.dropzone}
-							class="p-8 text-center border border-dashed border-zinc-300 rounded cursor-pointer hover:bg-zinc-50 text-zinc-500 transition-colors"
+							class="p-8 text-center border border-dashed border-zinc-300 rounded-none cursor-pointer hover:bg-zinc-50 text-zinc-500 transition-colors"
 						>
 							{#if fileUpload.isDragging}
 								<CloudArrowUpIcon class="mx-auto size-8" />
@@ -215,16 +221,17 @@
 				name="description"
 				bind:value={description}
 				placeholder="Describe el recurso que vas a subir para ayudar a que otros estudiantes entiendan de que se trata."
-				class="bg-zinc-100 border border-zinc-300 p-2 rounded focus:outline-none focus:border-blue-300 focus:bg-blue-50"
+				class="bg-zinc-100 border border-zinc-300 p-2 rounded-none focus:outline-none focus:border-lime-300"
 			></textarea>
 		</div>
-
-		<button
-			onclick={handleSubmit}
-			disabled={isSubmitting}
-			class="bg-zinc-900 text-zinc-100 px-6 py-2 mt-4 rounded cursor-pointer hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed"
-		>
-			{isSubmitting ? 'Subiendo...' : 'Subir Recurso'}
-		</button>
+		<div class="flex justify-end">
+			<button
+				onclick={handleSubmit}
+				disabled={isSubmitting}
+				class="bg-zinc-900 text-zinc-100 px-6 py-2 mt-4 rounded-none cursor-pointer hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed"
+			>
+				{isSubmitting ? 'Subiendo...' : 'Subir Recurso'}
+			</button>
+		</div>
 	</div>
 </div>

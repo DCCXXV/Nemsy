@@ -17,32 +17,28 @@
 	let currentPath = $derived(page.url.pathname);
 </script>
 
-<svelte:head>
-	<link rel="icon" href="/favicon.svg" />
-</svelte:head>
-
 {#if currentPath.includes('/auth')}
 	{@render props.children?.()}
 {:else}
-	<div class="min-h-screen flex flex-col bg-zinc-100">
+	<div class="min-h-screen flex flex-col bg-zinc-100 transition-all">
 		<div class="bg-zinc-100 bg-opacity-70 z-50 flex items-center justify-between px-4 py-2">
 			<div class="flex items-center">
 				<div class="relative" use:clickOutside onoutclick={closeMenu}>
 					<button
 						aria-label="menú-móvil"
-						class="lg:hidden h-10 px-2 py-2 mr-2 rounded bg-zinc-100 border-2 border-zinc-900 transition-colors inline-flex items-center cursor-pointer hover:bg-zinc-200"
+						class="lg:hidden h-10 px-2 py-2 mr-2 rounded-none bg-zinc-100 border-2 border-zinc-900 transition-colors inline-flex items-center cursor-pointer hover:bg-zinc-200"
 						onclick={() => (isMenuOpen = !isMenuOpen)}
 					>
 						<ListIcon />
 					</button>
 					{#if isMenuOpen}
 						<ul
-							class="absolute bg-zinc-100 rounded z-10 mt-3 w-52 p-2 list-none border-zinc-900 border-2 transition-opacity"
+							class="absolute bg-zinc-100 rounded-none z-10 mt-3 w-52 p-2 list-none border-zinc-900 border-2 transition-opacity"
 						>
-							<li><a class="block px-4 py-2 hover:bg-zinc-200 rounded" href="/">Inicio</a></li>
-							<li><a class="block px-4 py-2 hover:bg-zinc-200 rounded" href="#">Buscar</a></li>
+							<li><a class="block px-4 py-2 hover:bg-zinc-200 rounded-none" href="/">Inicio</a></li>
+							<li><a class="block px-4 py-2 hover:bg-zinc-200 rounded-none" href="#">Buscar</a></li>
 							<li>
-								<a class="block px-4 py-2 hover:bg-zinc-200 rounded" href="/create">Crear</a>
+								<a class="block px-4 py-2 hover:bg-zinc-200 rounded-none" href="/create">Crear</a>
 							</li>
 						</ul>
 					{/if}
@@ -50,7 +46,7 @@
 
 				<a
 					href="/"
-					class="h-10 text-2xl text-zinc-700 font-bold px-4 py-2 transition-colors inline-flex items-center cursor-pointer"
+					class="h-10 text-2xl text-zinc-700 px-4 py-2 transition-colors inline-flex items-center cursor-pointer"
 				>
 					<img src="/favicon.svg" alt="Logo" class="size-6 mr-3" />
 					nemsy
@@ -58,11 +54,11 @@
 			</div>
 
 			<div class="hidden lg:flex flex-1 justify-center">
-				<ul class="flex list-none bg-zinc-100 border-1 border-zinc-900 rounded">
+				<ul class="flex list-none bg-zinc-50 border border-zinc-300 rounded-none">
 					<li>
 						<a
-							class="h-10 flex items-center px-6 py-2 hover:bg-zinc-200 rounded transition-colors
-							{currentPath === '/' ? 'font-bold bg-zinc-200' : ''}"
+							class="h-10 flex items-center px-6 py-2 hover:bg-zinc-200 transition-colors
+							{currentPath === '/' ? 'bg-zinc-200' : ''}"
 							href="/"
 							>Inicio
 						</a>
@@ -70,14 +66,14 @@
 					<!--
 					<li>
 						<a
-							class="cursor-not-allowed h-10 flex items-center px-6 py-2 hover:bg-zinc-200 rounded transition-colors"
+							class="cursor-not-allowed h-10 flex items-center px-6 py-2 hover:bg-zinc-200 rounded-none transition-colors"
 							href="#">Buscar</a
 						>
 					</li>-->
 					<li>
 						<a
-							class="h-10 flex items-center px-6 py-2 hover:bg-zinc-200 rounded transition-colors
-							{currentPath === '/create' ? 'font-bold bg-zinc-200' : ''}"
+							class="h-10 flex items-center px-6 py-2 hover:bg-zinc-200 transition-colors
+							{currentPath === '/create' ? 'bg-zinc-200' : ''}"
 							href="/create">Crear</a
 						>
 					</li>
@@ -87,14 +83,14 @@
 			<div class="flex-none flex flex-row items-center gap-4">
 				{#if props.data.me}
 					<div
-						class="h-10 flex items-center px-4 py-2 bg-zinc-100 text-zinc-900 border-zinc-900 border-1 rounded"
+						class="h-10 flex items-center px-4 py-2 bg-zinc-50 text-zinc-900 border-zinc-300 border rounded-none"
 					>
 						{props.data.me?.email?.split('@')[0]}
 					</div>
 				{:else}
 					<button
 						onclick={() => (window.location.href = '/auth')}
-						class="h-10 px-4 py-2 bg-orange-300 hover:brightness-90 border-zinc-900 border-2 rounded transition-colors inline-flex items-center cursor-pointer"
+						class="h-10 px-4 py-2 bg-orange-300 hover:brightness-90 border-zinc-900 border-2 rounded-none transition-colors inline-flex items-center cursor-pointer"
 					>
 						<svg
 							class="mr-2 -ml-1 w-4 h-4"
@@ -135,13 +131,13 @@
 		<nav class="flex grow flex-col gap-2 flex-1 sm:flex-none">
 			<h6 class="text-sm font-bold tracking-wide text-zinc-600 uppercase">Información</h6>
 			<a
-				href="#"
+				href="/"
 				class="text-zinc-800 hover:text-zinc-900 hover:underline transition-colors no-underline"
 			>
 				Sobre nosotros
 			</a>
 			<a
-				href="#"
+				href="/"
 				class="text-zinc-800 hover:text-zinc-900 hover:underline transition-colors no-underline"
 			>
 				Contacto
