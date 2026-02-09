@@ -82,35 +82,35 @@
 				Por el momento solo esta disponible la UCM.
 			</p>
 			<div
-				class="rounded bg-pastel-200 my-4 p-2 flex border-2 border-pastel-900 gap-4 items-center"
+				class="rounded-none bg-zinc-200 my-4 p-2 flex border-2 border-zinc-900 gap-4 items-center"
 			>
 				<img
 					src="https://logo.clearbit.com/{data.me?.hd}"
 					alt="Logo de {data.me?.hd}"
-					class="rounded"
+					class="rounded-none"
 				/>
 				<h1 class="text-xl">Universidad Complutense de Madrid</h1>
 			</div>
 		{:else}
 			<p class="text-xl">Hemos detectado que tu universidad es:</p>
 			<div
-				class="rounded bg-pastel-200 my-4 p-2 flex border-2 border-pastel-500 gap-4 items-center"
+				class="rounded-none bg-zinc-200 my-4 p-2 flex border-2 border-zinc-500 gap-4 items-center"
 			>
 				<img
 					src="https://logo.clearbit.com/{data.me?.hd}"
 					alt="Logo de {data.me?.hd}"
-					class="rounded"
+					class="rounded-none"
 				/>
 				<!-- TODO: JetBrains SWOT -->
 				<h1 class="text-xl">Universidad Complutense de Madrid</h1>
 			</div>
 		{/if}
 		<p class="text-xl">Para continuar, selecciona tu grado:</p>
-		<div class="w-full flex rounded border-2 border-pastel-900 mb-6 mt-2 items-center">
+		<div class="w-full flex rounded-none border-2 border-zinc-900 mb-6 mt-2 items-center">
 			<Search class="mx-2" />
 			<input
 				type="search"
-				class="flex-grow border-0 focus:outline-none focus:ring-0 bg-zinc-100"
+				class="grow border-0 focus:outline-none focus:ring-0 bg-zinc-100"
 				placeholder="Buscar grado"
 				spellcheck="false"
 				bind:value={query}
@@ -118,15 +118,15 @@
 		</div>
 		{#if loading}
 			<!-- skeleton later -->
-			<p class="text-center text-pastel-600">Cargando grados...</p>
+			<p class="text-center text-zinc-600">Cargando grados...</p>
 		{:else if filteredStudies.length > 0}
-			<div class="mb-6 bg-zinc-100 border-pastel-900 border-2 rounded overflow-auto max-h-1/2">
+			<div class="mb-6 bg-zinc-100 border-zinc-900 border-2 rounded-none overflow-auto max-h-1/2">
 				{#each filteredStudies as study (study.id)}
 					<button
 						onclick={() => selectStudy(study)}
 						class={`w-full text-left p-2 hover:cursor-pointer transition-colors ${
 							selectedStudy?.name == study.name
-								? 'bg-pastel-200 hover:bg-pastel-300 border-pastel-500'
+								? 'bg-zinc-200 hover:bg-zinc-300 border-zinc-500'
 								: 'bg-zinc-100 hover:bg-zinc-200 border-zinc-100'
 						} ${filteredStudies.length == 1 ? 'border-0' : 'border-y-2'}
 						}`}
@@ -138,7 +138,7 @@
 				{/each}
 			</div>
 			<p
-				class={`bg-rose-200 border-l-4 border-rose-900 pl-4 py-2 mb-6 rounded ${errorMsg == '' ? 'invisible' : ''}`}
+				class={`bg-rose-200 border-l-4 border-rose-900 pl-4 py-2 mb-6 rounded-none ${errorMsg == '' ? 'invisible' : ''}`}
 			>
 				{errorMsg}
 			</p>
@@ -146,23 +146,28 @@
 		<div class="w-full text-right absolute bottom-0 ml-auto">
 			<button
 				onclick={() => finish(selectedStudy)}
-				class="h-10 px-10 py-2 bg-orange-300 hover:brightness-90 border-zinc-900 border-2 rounded transition-colors inline-flex items-center cursor-pointer text-lg"
+				class="h-10 px-10 py-2 bg-orange-300 hover:brightness-90 border-zinc-900 border-2 rounded-none transition-colors inline-flex items-center cursor-pointer text-lg"
 			>
 				Terminar
 			</button>
 		</div>
 	{:else}
 		<div class="my-auto">
-			<h1 class="text-4xl text-pastel-900 select-none">Bienvenido a Nemsy</h1>
-			<hr class="text-pastel-900 mb-8 border border-zinc-900" />
-			<p class="bg-zinc-200 border-l-4 border-zinc-900 pl-4 py-2 rounded">
-				Si es su primer acceso le rogamos usar el correo institucional (por ejemplo:
-				usuario@ucm.es), en caso de disponer de él, para facilitar el proceso de <i>onboarding</i>.
+			<h1 class="text-4xl text-zinc-700 select-none flex items-center mb-6">
+				Te damos la bienvenida a <img
+					src="/favicon.svg"
+					alt="Nemsy Logo"
+					class="size-8 ml-6 mr-2"
+				/><span class="text-zinc-700">nemsy</span>
+			</h1>
+			<p class="bg-red-50 border-l text-red-700 border-red-700 pl-4 py-2 rounded-none">
+				Si es tu primer acceso te recomendamos usar tu correo institucional (ej: usuario@ucm.es), en
+				caso de disponer de él, para facilitar el proceso de <i>onboarding</i>.
 			</p>
 			<div class="text-right mt-4">
 				<button
 					onclick={() => (window.location.href = `${env.PUBLIC_API_BASE_URL}/auth/login`)}
-					class="h-10 px-4 py-2 bg-orange-300 hover:brightness-90 border-zinc-900 border-2 rounded transition-colors inline-flex items-center cursor-pointer"
+					class="h-10 px-4 py-2 bg-blue-200 hover:bg-blue-100 border-blue-900 text-blue-900 rounded-none transition-colors inline-flex items-center cursor-pointer"
 				>
 					<svg
 						class="mr-2 ml-1 w-4 h-4"

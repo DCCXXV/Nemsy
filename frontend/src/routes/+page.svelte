@@ -18,6 +18,8 @@
 	import RowsIcon from 'phosphor-svelte/lib/RowsIcon';
 	import SquareIcon from 'phosphor-svelte/lib/SquareIcon';
 	import PushPinIcon from 'phosphor-svelte/lib/PushPinIcon';
+	import ImagesIcon from 'phosphor-svelte/lib/ImagesIcon';
+	import PencilRulerIcon from 'phosphor-svelte/lib/PencilRulerIcon';
 
 	let { data }: { data: PageData } = $props();
 
@@ -52,10 +54,20 @@
 		localStorage.setItem('lastTab', id);
 	}
 
+	function selectViewMode(compact: boolean) {
+		compactMode = compact;
+		localStorage.setItem('compactMode', compact.toString());
+	}
+
 	onMount(() => {
 		const savedTab = localStorage.getItem('lastTab');
 		if (savedTab && tabIds.includes(savedTab)) {
 			selectedTab = savedTab;
+		}
+
+		const savedCompactMode = localStorage.getItem('compactMode');
+		if (savedCompactMode === 'true') {
+			compactMode = true;
 		}
 
 		if (!selectedSubjectID) {
@@ -88,7 +100,7 @@
 							{#each tabIds as id (id)}
 								<Tabs.Trigger
 									value={id}
-									class="flex-1 rounded-none px-2 py-1 cursor-pointer border border-zinc-200 transition-colors bg-zinc-100 text-zinc-950 hover:bg-zinc-200 data-[state=active]:bg-zinc-700 data-[state=active]:text-white hover:data-[state=active]:bg-zinc-900 text-center"
+									class="flex-1 rounded-none px-2 py-1 cursor-pointer border border-zinc-200 transition-colors bg-zinc-100 text-zinc-950 hover:bg-zinc-200 data-[state=active]:bg-violet-200 data-[state=active]:text-violet-900 hover:data-[state=active]:bg-violet-200 text-center"
 								>
 									{id}
 								</Tabs.Trigger>
@@ -108,10 +120,10 @@
 												<a
 													href="?subject={subject.id}"
 													onclick={() => selectSubject(subject.id.toString())}
-													class="block rounded-none py-2 px-2 mb-2 border cursor-pointer text-zinc-700
+													class="block rounded-none py-2 px-2 mb-2 border cursor-pointer
 												{selectedSubject?.name == subject?.name
-														? 'bg-zinc-200 border-zinc-200'
-														: 'bg-zinc-50 hover:bg-zinc-100 border-zinc-50 hover:border-zinc-200'}"
+														? 'bg-lime-200 border-lime-200 text-lime-800'
+														: 'text-zinc-700 bg-zinc-50 hover:bg-zinc-100 border-zinc-50 hover:border-zinc-200'}"
 												>
 													{subject.name}
 												</a>
@@ -143,12 +155,15 @@
 									{#snippet children(toggle)}
 										<button
 											{...toggle.trigger}
-											class="flex items-center justify-center cursor-pointer text-zinc-500"
+											class="flex items-center justify-center cursor-pointer"
 										>
 											{#if toggle.value}
-												<PushPinIcon weight="fill" class="size-6" />
+												<PushPinIcon weight="fill" class="size-6 text-red-400" />
 											{:else}
-												<PushPinIcon weight="regular" class="size-6" />
+												<PushPinIcon
+													weight="regular"
+													class="size-6 text-zinc-500 hover:text-zinc-900"
+												/>
 											{/if}
 										</button>
 									{/snippet}
@@ -163,21 +178,15 @@
 						{/snippet}
 					</Tooltip>
 				</div>
-				<div class="bg-zinc-100 border-b border-zinc-300 flex items-center justify-between">
+				<div class="bg-zinc-100 border-b border-zinc-300 flex items-center py-1 justify-between">
 					<div></div>
-					<div class="text-zinc-500 bg-zinc-100 border-l border-zinc-300">
+					<div class="text-zinc-500 bg-zinc-100 border-l hover:text-zinc-900 border-zinc-300">
 						<button
 							class="flex gap-1 items-center justify-center cursor-pointer px-2"
-							onclick={() => (compactMode = !compactMode)}
+							onclick={() => selectViewMode(!compactMode)}
 						>
-							{#if compactMode}
-								<RowsIcon weight="thin" class="size-8" />
-							{:else}
-								<SquareIcon weight="thin" class="size-8" />
-							{/if}
-							<span class="text-zinc-500 w-20 text-left"
-								>{compactMode ? 'Compacto' : 'Comforte'}</span
-							>
+							<ImagesIcon class="size-6" />
+							<span class="w-20 text-left">{compactMode ? 'Compacto' : 'Comforte'}</span>
 						</button>
 					</div>
 				</div>
@@ -208,7 +217,7 @@
 												><ArchiveIcon class="size-4 mr-1" />Guardar</button
 											>-->
 											<button
-												class="bg-zinc-700 border border-zinc-900 hover:bg-zinc-800 text-zinc-50 px-2 py-0.5 flex items-center cursor-pointer text-sm"
+												class="bg-blue-200 border border-blue-100 hover:bg-blue-100 text-blue-900 px-2 py-0.5 flex items-center cursor-pointer text-sm"
 												><DownloadSimpleIcon class="size-4 mr-1" />Descargar</button
 											>
 										</div>
@@ -222,6 +231,7 @@
 												class="size-12 border border-zinc-300 mr-2 rounded-none"
 												src={resource.owner?.pfp}
 												alt="{resource.owner?.fullName}'s profile picture"
+												referrerpolicy="no-referrer"
 											/>
 											<div class="flex flex-col">
 												<h2 class="text-xl -mb-1">{resource.title}</h2>
@@ -247,7 +257,7 @@
 												><ArchiveIcon class="size-5 mr-2" />Guardar</button
 											>-->
 											<button
-												class="bg-zinc-700 border border-zinc-800 hover:bg-zinc-900 text-zinc-50 px-3 py-1 flex items-center cursor-pointer"
+												class="bg-blue-200 border border-blue-100 hover:bg-blue-100 text-blue-900 px-3 py-1 flex items-center cursor-pointer"
 												><DownloadSimpleIcon class="size-5 mr-2" />Descargar</button
 											>
 										</div>
@@ -260,37 +270,51 @@
 					{/if}
 				</div>
 			</div>
-			<div class="bg-zinc-1010 rounded-none w-1/4 mr-4 h-24 sticky top-4"></div>
+			<div
+				class="text-yellow-600 bg-yellow-100 border border-x-yellow-300 rounded-none w-1/4 mr-4 min-h-136 sticky top-4 flex flex-col items-center"
+			>
+				<div class="m-auto aspect-square text-center p-2">
+					<PencilRulerIcon weight="thin" class="size-14 mx-auto" />
+					<h3>WIP</h3>
+				</div>
+			</div>
 		</div>
 	</div>
 {:else}
-	<div class="relative min-h-screen bg-zinc-100 flex justify-center items-center">
-		<div class="absolute inset-x-0 top-0 h-[calc(3/7*100vh)] bg-zinc-200 z-0"></div>
+	<div class="relative min-h-screen bg-zinc-200 flex justify-center items-center">
+		<div class="absolute inset-x-0 top-0 h-[calc(3/7*100vh)] bg-zinc-100 z-0"></div>
 
 		<div
 			class="relative z-10 flex flex-col lg:flex-row w-full max-w-6xl p-4 lg:p-0 mt-24 lg:mt-0 mb-24"
 		>
 			<div
-				class="flex-1 h-full flex justify-center items-center lg:items-start py-12 border border-zinc-300 rounded-none lg:px-10 bg-zinc-100 shadow-[-8px_8px_0px_#000000] transition-all hover:shadow-none hover:translate-x-[-8px] hover:translate-y-[8px]"
+				class="flex-1 h-full flex justify-center items-center lg:items-start py-12 border border-zinc-300 rounded-none lg:px-10 bg-zinc-50 shadow-[-8px_8px_0px_#d4d4d8] transition-all hover:shadow-none hover:translate-x-[-8px] hover:translate-y-[8px]"
 			>
 				<div
 					class="max-w-md flex flex-col items-center lg:items-start text-left mx-auto lg:mx-0 w-full p-4"
 				>
-					<h1 class="text-5xl font-bold text-zinc-700">nemsy</h1>
+					<h1 class="text-5xl text-zinc-700">nemsy</h1>
 					<p class="py-6">
-						Comparte y accede a <mark>apuntes universitarios</mark> con facilidad. Todo lo que necesitas
-						para estudiar mejor, en un solo lugar.
+						Comparte y accede a <mark class="bg-red-200 text-red-900">apuntes universitarios</mark> con
+						facilidad. Todo lo que necesitas para estudiar mejor, en un solo lugar.
 					</p>
 
 					<div class="grid gap-3 mb-6 w-full">
 						<div class="flex items-center gap-2 justify-start">
-							<span><mark>Open Source</mark> = transparente y colaborativo.</span>
+							<span
+								><mark class="bg-yellow-200 text-yellow-900">Open Source</mark> = transparente y colaborativo.</span
+							>
 						</div>
 						<div class="flex items-center gap-2 justify-start">
-							<span><mark>Sin anuncios</mark> = tu atención en lo que importa.</span>
+							<span
+								><mark class="bg-blue-200 text-blue-900">Sin anuncios</mark> = tu atención en lo que importa.</span
+							>
 						</div>
 						<div class="flex items-center gap-2 justify-start">
-							<span><mark>Rápido y ligero</mark> = acceso instantáneo a tus apuntes.</span>
+							<span
+								><mark class="bg-lime-200 text-lime-900">Rápido y ligero</mark> = acceso instantáneo a
+								tus apuntes.</span
+							>
 						</div>
 					</div>
 				</div>

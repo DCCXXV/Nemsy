@@ -2,7 +2,7 @@
 	import { Combobox } from 'bits-ui';
 	import { FileUpload } from 'melt/components';
 	import CaretUpDownIcon from 'phosphor-svelte/lib/CaretUpDownIcon';
-	import Check from 'phosphor-svelte/lib/Check';
+	import CheckIcon from 'phosphor-svelte/lib/CheckIcon';
 	import BookIcon from 'phosphor-svelte/lib/BookIcon';
 
 	import CaretDoubleUpIcon from 'phosphor-svelte/lib/CaretDoubleUpIcon';
@@ -91,7 +91,7 @@
 
 	<div class="relative z-10 bg-zinc-50 border border-zinc-300 rounded-none w-3/7 ml-4 p-4">
 		{#if error}
-			<div class="bg-red-100 border border-red-400 text-red-950 px-4 py-2 rounded-none mb-4">
+			<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-none mb-4">
 				{error}
 			</div>
 		{/if}
@@ -102,7 +102,7 @@
 				name="title"
 				placeholder="Titulo del recurso"
 				bind:value={title}
-				class="bg-zinc-100 border border-zinc-300 p-2 rounded-none focus:outline-none focus:border-lime-300"
+				class="bg-zinc-100 border border-zinc-300 p-2 text-zinc-700 rounded-none focus:ring-0 focus:border-blue-600"
 			/>
 		</div>
 
@@ -120,7 +120,7 @@
 					<BookIcon class="absolute left-3 top-1/2 size-5 -translate-y-1/2 text-zinc-900" />
 					<Combobox.Input
 						oninput={(e) => (searchValue = e.currentTarget.value)}
-						class="w-full h-10 pl-10 pr-10 bg-zinc-100 border border-zinc-300 rounded-none text-sm placeholder:text-zinc-400 focus:outline-none focus:border-lime-300"
+						class="w-full h-10 pl-10 pr-10 bg-zinc-100 border border-zinc-300 rounded-none text-zinc-700 text placeholder:text-zinc-400 focus:ring-0 focus:border-blue-600"
 						placeholder="Buscar asignatura"
 						aria-label="Buscar asignatura"
 					/>
@@ -141,14 +141,14 @@
 						<Combobox.Viewport class="p-1">
 							{#each filteredSubjects as subject (subject.value)}
 								<Combobox.Item
-									class="flex items-center px-3 py-2 text-sm rounded-none cursor-pointer select-none data-[highlighted]:bg-zinc-200 data-[state=checked]:bg-zinc-200"
+									class="flex items-center px-3 py-2 text-sm rounded-none cursor-pointer select-none data-highlighted:bg-zinc-200 data-[state=checked]:bg-zinc-200"
 									value={subject.value}
 									label={subject.label}
 								>
 									{#snippet children({ selected })}
 										{subject.label}
 										{#if selected}
-											<Check class="ml-auto size-4 text-zinc-700" />
+											<CheckIcon class="ml-auto size-4 text-zinc-700" />
 										{/if}
 									{/snippet}
 								</Combobox.Item>
@@ -221,14 +221,14 @@
 				name="description"
 				bind:value={description}
 				placeholder="Describe el recurso que vas a subir para ayudar a que otros estudiantes entiendan de que se trata."
-				class="bg-zinc-100 border border-zinc-300 p-2 rounded-none focus:outline-none focus:border-lime-300"
+				class="bg-zinc-100 border border-zinc-300 p-2 text-zinc-700 rounded-none focus:ring-0 focus:border-blue-600"
 			></textarea>
 		</div>
 		<div class="flex justify-end">
 			<button
 				onclick={handleSubmit}
 				disabled={isSubmitting}
-				class="bg-zinc-900 text-zinc-100 px-6 py-2 mt-4 rounded-none cursor-pointer hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed"
+				class="bg-lime-200 text-lime-900 px-6 py-2 mt-4 rounded-none cursor-pointer hover:bg-lime-100 disabled:opacity-50 disabled:cursor-not-allowed"
 			>
 				{isSubmitting ? 'Subiendo...' : 'Subir Recurso'}
 			</button>

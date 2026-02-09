@@ -90,7 +90,7 @@
 				{:else}
 					<button
 						onclick={() => (window.location.href = '/auth')}
-						class="h-10 px-4 py-2 bg-orange-300 hover:brightness-90 border-zinc-900 border-2 rounded-none transition-colors inline-flex items-center cursor-pointer"
+						class="h-10 px-4 py-2 bg-blue-200 text-blue-900 hover:bg-blue-100 border-blue-200 border rounded-none transition-colors inline-flex items-center cursor-pointer"
 					>
 						<svg
 							class="mr-2 -ml-1 w-4 h-4"
@@ -116,7 +116,7 @@
 		{@render props.children?.()}
 	</div>
 
-	<footer class="bg-zinc-200 text-zinc-950 p-10 flex flex-col md:flex-row justify-between gap-8">
+	<footer class="bg-zinc-200 text-zinc-700 p-10 flex flex-col md:flex-row justify-between gap-8">
 		<aside class="flex flex-col md:flex-row items-start md:items-center gap-4 shrink-0">
 			<img src="/favicon.svg" alt="Logo" class="size-16 mr-3 grayscale" />
 			<p class="text-sm">
@@ -132,13 +132,13 @@
 			<h6 class="text-sm font-bold tracking-wide text-zinc-600 uppercase">Información</h6>
 			<a
 				href="/"
-				class="text-zinc-800 hover:text-zinc-900 hover:underline transition-colors no-underline"
+				class="text-zinc-700 hover:text-zinc-900 hover:underline transition-colors no-underline"
 			>
 				Sobre nosotros
 			</a>
 			<a
 				href="/"
-				class="text-zinc-800 hover:text-zinc-900 hover:underline transition-colors no-underline"
+				class="text-zinc-700 hover:text-zinc-900 hover:underline transition-colors no-underline"
 			>
 				Contacto
 			</a>
@@ -147,19 +147,19 @@
 			<h6 class="text-sm font-bold tracking-wide text-zinc-600 uppercase">Legal</h6>
 			<a
 				href="/tos"
-				class="text-zinc-800 hover:text-zinc-900 hover:underline transition-colors no-underline"
+				class="text-zinc-700 hover:text-zinc-900 hover:underline transition-colors no-underline"
 			>
 				Términos de uso
 			</a>
 			<a
 				href="/privacy"
-				class="text-zinc-800 hover:text-zinc-900 hover:underline transition-colors no-underline"
+				class="text-zinc-700 hover:text-zinc-900 hover:underline transition-colors no-underline"
 			>
 				Política de privacidad
 			</a>
 			<a
 				href="/cookies"
-				class="text-zinc-800 hover:text-zinc-900 hover:underline transition-colors no-underline"
+				class="text-zinc-700 hover:text-zinc-900 hover:underline transition-colors no-underline"
 			>
 				Política de Cookies
 			</a>
