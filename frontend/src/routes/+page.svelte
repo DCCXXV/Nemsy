@@ -216,9 +216,11 @@
 												class="bg-zinc-100 hover:bg-zinc-200 border border-zinc-300 text-zinc-600 px-2 py-0.5 flex items-center cursor-pointer text-sm"
 												><ArchiveIcon class="size-4 mr-1" />Guardar</button
 											>-->
-											<button
-												class="bg-blue-200 border border-blue-100 hover:bg-blue-100 text-blue-900 px-2 py-0.5 flex items-center cursor-pointer text-sm"
-												><DownloadSimpleIcon class="size-4 mr-1" />Descargar</button
+											<a href="{PUBLIC_API_BASE_URL}/api/resources/{resource.id}/download">
+												<button
+													class="bg-blue-200 border border-blue-100 hover:bg-blue-100 text-blue-900 px-2 py-0.5 flex items-center cursor-pointer text-sm"
+													><DownloadSimpleIcon class="size-4 mr-1" />Descargar</button
+												></a
 											>
 										</div>
 									</div>
@@ -256,9 +258,11 @@
 												class="bg-zinc-100 hover:bg-zinc-200 border border-zinc-300 text-zinc-600 px-3 py-1 flex items-center cursor-pointer"
 												><ArchiveIcon class="size-5 mr-2" />Guardar</button
 											>-->
-											<button
-												class="bg-blue-200 border border-blue-100 hover:bg-blue-100 text-blue-900 px-3 py-1 flex items-center cursor-pointer"
-												><DownloadSimpleIcon class="size-5 mr-2" />Descargar</button
+											<a href="{PUBLIC_API_BASE_URL}/api/resources/{resource.id}/download">
+												<button
+													class="bg-blue-200 border border-blue-100 hover:bg-blue-100 text-blue-900 px-3 py-1 flex items-center cursor-pointer"
+													><DownloadSimpleIcon class="size-5 mr-2" />Descargar</button
+												></a
 											>
 										</div>
 									</div>
@@ -271,7 +275,7 @@
 				</div>
 			</div>
 			<div
-				class="text-yellow-600 bg-yellow-100 border border-x-yellow-300 rounded-none w-1/4 mr-4 min-h-136 sticky top-4 flex flex-col items-center"
+				class="text-yellow-600 bg-yellow-100 border border-yellow-400 rounded-none w-1/4 mr-4 min-h-136 sticky top-4 flex flex-col items-center"
 			>
 				<div class="m-auto aspect-square text-center p-2">
 					<PencilRulerIcon weight="thin" class="size-14 mx-auto" />

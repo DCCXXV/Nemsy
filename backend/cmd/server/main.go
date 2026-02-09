@@ -96,6 +96,7 @@ func main() {
 
 		protected.Post("/api/resources", resourcesHandler.Create)
 		protected.Get("/api/resources/{id}", resourcesHandler.Get)
+		protected.Get("/api/resources/{id}/download", resourcesHandler.Download)
 		protected.Get("/api/subjects/{id}/resources", resourcesHandler.ListBySubject)
 	})
 

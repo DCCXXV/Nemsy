@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/DCCXXV/Nemsy/backend/internal/app"
@@ -227,4 +228,26 @@ func (h *Handler) ListBySubject(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(resp)
+}
+
+func (h *Handler) Download(w http.ResponseWriter, r *http.Request) {
+	idStr := chi.URLParam(r, "id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "invalid id", http.StatusBadRequest)
+		return
+	}
+
+	resource, err := h.app.Queries.GetResource(r.Context(), int32(id))
+	if err != nil {
+		http.Error(w, "resource not found", http.StatusNotFound)
+		return
+	}
+
+	ext := filepath.Ext(resource.FileUrl)
+	filename := strings.ReplaceAll(resource.Title, " ", "_") + ext
+
+	filePath := filepath.Join(h.uploadDir, filepath.Base(resource.FileUrl))
+	w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="%s"`, filename))
+	http.ServeFile(w, r, filePath)
 }
