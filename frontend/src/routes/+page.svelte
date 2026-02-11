@@ -20,6 +20,10 @@
 	import PushPinIcon from 'phosphor-svelte/lib/PushPinIcon';
 	import ImagesIcon from 'phosphor-svelte/lib/ImagesIcon';
 	import PencilRulerIcon from 'phosphor-svelte/lib/PencilRulerIcon';
+	import ArrowUpRightIcon from 'phosphor-svelte/lib/ArrowUpRightIcon';
+	import FilePdfIcon from 'phosphor-svelte/lib/FilePdfIcon';
+	import QuestionIcon from 'phosphor-svelte/lib/QuestionIcon';
+	import ClockClockwise from 'phosphor-svelte/lib/ClockClockwise';
 
 	let { data }: { data: PageData } = $props();
 
@@ -80,7 +84,7 @@
 </script>
 
 {#if data.me}
-	<div class="relative bg-zinc-100 min-h-screen overflow-hidden">
+	<div class="relative bg-zinc-100 min-h-screen">
 		<div class="relative z-10 flex items-start justify-center pt-4 pb-6">
 			<div class="bg-zinc-50 border border-zinc-300 rounded-none w-1/4 ml-4 sticky top-4">
 				<div class="p-2 flex gap-4 items-center border-b border-zinc-300">
@@ -141,7 +145,7 @@
 			<div
 				class="bg-zinc-50 border border-zinc-300 rounded-none w-1/2 mx-4 {data.resources.length
 					? ''
-					: 'min-h-screen'}"
+					: 'border-b-0'}"
 			>
 				<div class="p-2 border-b border-zinc-300 text-zinc-700 flex items-center justify-between">
 					<h1 class="text-2xl">
@@ -178,8 +182,13 @@
 						{/snippet}
 					</Tooltip>
 				</div>
-				<div class="bg-zinc-100 border-b border-zinc-300 flex items-center py-1 justify-between">
-					<div></div>
+				<div class="bg-zinc-100 border-b border-zinc-300 flex items-center py-1 justify-end">
+					<div class="text-zinc-500 bg-zinc-100 border-l border-zinc-300">
+						<button class="flex gap-1 items-center justify-center px-2">
+							<ClockClockwise class="size-6" />
+							<span class="w-20 text-left">Recientes</span>
+						</button>
+					</div>
 					<div class="text-zinc-500 bg-zinc-100 border-l hover:text-zinc-900 border-zinc-300">
 						<button
 							class="flex gap-1 items-center justify-center cursor-pointer px-2"
@@ -190,8 +199,18 @@
 						</button>
 					</div>
 				</div>
+				<div
+					class="bg-yellow-100 border-b border-yellow-300 text-yellow-700 flex items-center px-2 pb-2 pt-4 justify-between"
+				>
+					<p>¿Quieres compartir un recurso para esta asignatura?</p>
+					<button
+						class="flex items-center bg-zinc-50 text-sm text-zinc-600 p-1 border border-yellow-300 cursor-pointer hover:underline"
+					>
+						Compartir <ArrowUpRightIcon class="size-4 ml-2" />
+					</button>
+				</div>
 
-				<div class="">
+				<div>
 					{#if selectedSubject}
 						{#each data.resources as resource (resource.id)}
 							{#if compactMode}
@@ -200,8 +219,20 @@
 										<img
 											src="{PUBLIC_API_BASE_URL}{resource.fileUrl}"
 											alt="{resource.title} thumbnail"
-											class="rounded-none border border-zinc-300 w-20 object-cover self-stretch"
+											class="rounded-none border border-zinc-300 h-full w-20 object-cover self-stretch"
 										/>
+									{:else if resource.fileUrl.match(/\.(pdf)$/i)}
+										<div
+											class="w-20 self-stretch rounded-none border border-red-200 bg-red-50 flex items-center justify-center"
+										>
+											<FilePdfIcon class="size-12 text-red-400" />
+										</div>
+									{:else}
+										<div
+											class="w-20 self-stretch rounded-none border border-zinc-300 bg-zinc-100 flex items-center justify-center"
+										>
+											<QuestionIcon class="size-12 text-zinc-500" />
+										</div>
 									{/if}
 									<div class="flex flex-col flex-1 justify-between py-1">
 										<div>
@@ -226,8 +257,8 @@
 									</div>
 								</div>
 							{:else}
-								<div class="border-b last:border-b-0 p-2 border-zinc-200 flex gap-2">
-									<div class="flex flex-col gap-2">
+								<div class="border-b last:border-b-0 p-2 border-zinc-200 flex w-full gap-2">
+									<div class="flex flex-col gap-2 w-full">
 										<div class="flex align-middle">
 											<img
 												class="size-12 border border-zinc-300 mr-2 rounded-none"
@@ -242,13 +273,21 @@
 												</p>
 											</div>
 										</div>
-										<div>
+										<div
+											class="rounded-none border border-zinc-300 overflow-hidden flex items-center justify-center"
+										>
 											{#if resource.fileUrl.match(/\.(jpg|jpeg|png|gif|webp)$/i)}
 												<img
 													src="{PUBLIC_API_BASE_URL}{resource.fileUrl}"
 													alt="{resource.title} thumbnail"
-													class="rounded-none border border-zinc-300 w-full"
+													class="w-full h-full object-cover"
 												/>
+											{:else if resource.fileUrl.match(/\.(pdf)$/i)}
+												<FilePdfIcon class="size-12 h-24 text-red-400 mr-2" />
+												<p class="text-xl text-red-400">Previsualización de PDFs no disponible</p>
+											{:else}
+												<QuestionIcon class="size-12 h-24 text-zinc-400 mr-2" />
+												<p class="text-xl text-zinc-400">Formato desconocido</p>
 											{/if}
 										</div>
 										<p class="text-zinc-700">{resource.description}</p>
@@ -270,12 +309,12 @@
 							{/if}
 						{/each}
 					{:else}
-						<p class="text-zinc-500">Selecciona una asignatura</p>
+						<p class="text-zinc-500">Selecciona una asignatura para empezar</p>
 					{/if}
 				</div>
 			</div>
 			<div
-				class="text-yellow-600 bg-yellow-100 border border-yellow-400 rounded-none w-1/4 mr-4 min-h-136 sticky top-4 flex flex-col items-center"
+				class="text-zinc-400 bg-zinc-50 border border-zinc-300 rounded-none w-1/4 mr-4 min-h-136 sticky top-4 flex flex-col items-center"
 			>
 				<div class="m-auto aspect-square text-center p-2">
 					<PencilRulerIcon weight="thin" class="size-14 mx-auto" />

@@ -5,6 +5,8 @@
 	import { page } from '$app/state';
 
 	import ListIcon from 'phosphor-svelte/lib/ListIcon';
+	import HouseIcon from 'phosphor-svelte/lib/HouseIcon';
+	import ShapesIcon from 'phosphor-svelte/lib/ShapesIcon';
 
 	let props = $props<{ data: LayoutData; children: () => unknown }>();
 
@@ -54,13 +56,15 @@
 			</div>
 
 			<div class="hidden lg:flex flex-1 justify-center">
-				<ul class="flex list-none bg-zinc-50 border border-zinc-300 rounded-none">
+				<ul class="flex list-none bg-zinc-50 rounded-none">
 					<li>
 						<a
-							class="h-10 flex items-center px-6 py-2 hover:bg-zinc-200 transition-colors
-							{currentPath === '/' ? 'bg-zinc-200' : ''}"
+							class="h-10 flex items-center px-6 py-2 transition-colors
+							{currentPath === '/'
+								? 'bg-zinc-200 text-zinc-700 border-zinc-200 border-l border-t border-b hover:bg-zinc-300'
+								: 'bg-zinc-100 border-zinc-300 border-l border-t border-b text-zinc-700 hover:bg-zinc-300'}"
 							href="/"
-							>Inicio
+							><HouseIcon class="size-5 mr-2" />Inicio
 						</a>
 					</li>
 					<!--
@@ -72,9 +76,11 @@
 					</li>-->
 					<li>
 						<a
-							class="h-10 flex items-center px-6 py-2 hover:bg-zinc-200 transition-colors
-							{currentPath === '/create' ? 'bg-zinc-200' : ''}"
-							href="/create">Crear</a
+							class="h-10 flex items-center px-6 py-2 transition-colors
+							{currentPath === '/create'
+								? 'bg-zinc-200 text-zinc-700 border-zinc-200 border-r border-t border-b hover:bg-zinc-300'
+								: 'bg-zinc-100 border-zinc-300 border-r border-t border-b text-zinc-700 hover:bg-zinc-300'}"
+							href="/create"><ShapesIcon class="size-5 mr-2" />Compartir</a
 						>
 					</li>
 				</ul>

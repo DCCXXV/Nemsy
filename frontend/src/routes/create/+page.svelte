@@ -9,6 +9,7 @@
 	import CaretDoubleDownIcon from 'phosphor-svelte/lib/CaretDoubleDownIcon';
 	import CloudArrowUpIcon from 'phosphor-svelte/lib/CloudArrowUpIcon';
 	import XIcon from 'phosphor-svelte/lib/XIcon';
+	import PaperPlaneTiltIcon from 'phosphor-svelte/lib/PaperPlaneTiltIcon';
 
 	import { PUBLIC_API_BASE_URL } from '$env/static/public';
 	import { goto } from '$app/navigation';
@@ -228,9 +229,9 @@
 			<button
 				onclick={handleSubmit}
 				disabled={isSubmitting}
-				class="bg-lime-200 text-lime-900 px-6 py-2 mt-4 rounded-none cursor-pointer hover:bg-lime-100 disabled:opacity-50 disabled:cursor-not-allowed"
+				class="flex items-center bg-lime-200 text-lime-700 px-6 py-2 mt-4 rounded-none cursor-pointer hover:bg-lime-100 disabled:opacity-50 disabled:cursor-not-allowed"
 			>
-				{isSubmitting ? 'Subiendo...' : 'Subir Recurso'}
+				<PaperPlaneTiltIcon class="size-5 mr-2" />{isSubmitting ? 'Subiendo...' : 'Subir Recurso'}
 			</button>
 		</div>
 	</div>
