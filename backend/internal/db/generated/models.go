@@ -14,9 +14,16 @@ type Resource struct {
 	SubjectID   int32
 	Title       string
 	Description pgtype.Text
-	FileUrl     string
-	FileSize    pgtype.Int8
 	CreatedAt   pgtype.Timestamp
+}
+
+type ResourceFile struct {
+	ID         int32
+	ResourceID int32
+	S3Key      string
+	FileName   string
+	FileSize   int64
+	CreatedAt  pgtype.Timestamp
 }
 
 type Study struct {

@@ -24,6 +24,24 @@
 	import FilePdfIcon from 'phosphor-svelte/lib/FilePdfIcon';
 	import QuestionIcon from 'phosphor-svelte/lib/QuestionIcon';
 	import ClockClockwise from 'phosphor-svelte/lib/ClockClockwise';
+	import FolderIcon from 'phosphor-svelte/lib/FolderIcon';
+
+	import type { Resource } from '$lib/types';
+
+	function getFirstFileExt(resource: Resource): string {
+		if (!resource.files?.length) return '';
+		const name = resource.files[0].fileName;
+		const dot = name.lastIndexOf('.');
+		return dot >= 0 ? name.slice(dot + 1).toLowerCase() : '';
+	}
+
+	function isImage(ext: string): boolean {
+		return ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext);
+	}
+
+	function isPdf(ext: string): boolean {
+		return ext === 'pdf';
+	}
 
 	let { data }: { data: PageData } = $props();
 
@@ -215,13 +233,13 @@
 						{#each data.resources as resource (resource.id)}
 							{#if compactMode}
 								<div class="border-b last:border-b-0 p-2 border-zinc-200 flex gap-3">
-									{#if resource.fileUrl.match(/\.(jpg|jpeg|png|gif|webp)$/i)}
-										<img
-											src="{PUBLIC_API_BASE_URL}{resource.fileUrl}"
-											alt="{resource.title} thumbnail"
-											class="rounded-none border border-zinc-300 h-full w-20 object-cover self-stretch"
-										/>
-									{:else if resource.fileUrl.match(/\.(pdf)$/i)}
+									{#if resource.files.length > 1}
+										<div
+											class="w-20 self-stretch rounded-none border border-yellow-300 bg-yellow-100 flex items-center justify-center"
+										>
+											<FolderIcon class="size-12 text-yellow-600" />
+										</div>
+									{:else if isPdf(getFirstFileExt(resource))}
 										<div
 											class="w-20 self-stretch rounded-none border border-red-200 bg-red-50 flex items-center justify-center"
 										>
@@ -274,17 +292,14 @@
 											</div>
 										</div>
 										<div
-											class="rounded-none border border-zinc-300 overflow-hidden flex items-center justify-center"
+											class="rounded-none border border-zinc-300 overflow-hidden flex items-center justify-center bg-white"
 										>
-											{#if resource.fileUrl.match(/\.(jpg|jpeg|png|gif|webp)$/i)}
-												<img
-													src="{PUBLIC_API_BASE_URL}{resource.fileUrl}"
-													alt="{resource.title} thumbnail"
-													class="w-full h-full object-cover"
-												/>
-											{:else if resource.fileUrl.match(/\.(pdf)$/i)}
-												<FilePdfIcon class="size-12 h-24 text-red-400 mr-2" />
-												<p class="text-xl text-red-400">Previsualización de PDFs no disponible</p>
+											{#if resource.files.length > 1}
+												<FolderIcon class="size-12 h-24 text-yellow-600 mr-2" />
+												<p class="text-xl text-yellow-600">{resource.files.length} archivos</p>
+											{:else if isPdf(getFirstFileExt(resource))}
+												<FilePdfIcon class="size-12 h-24 text-red-300 mr-2" />
+												<p class="text-xl text-red-300">Previsualización de PDFs no disponible</p>
 											{:else}
 												<QuestionIcon class="size-12 h-24 text-zinc-400 mr-2" />
 												<p class="text-xl text-zinc-400">Formato desconocido</p>

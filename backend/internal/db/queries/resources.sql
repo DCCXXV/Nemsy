@@ -4,7 +4,7 @@ WHERE id = $1 LIMIT 1;
 
 -- name: GetResourceWithOwner :one
 SELECT
-    r.id, r.title, r.description, r.file_url, r.file_size, r.created_at,
+    r.id, r.title, r.description, r.created_at,
     u.id AS owner_id, u.full_name AS owner_full_name, u.email AS owner_email, u.pfp AS owner_pfp
 FROM resources r
 JOIN users u ON r.owner_id = u.id
@@ -17,7 +17,7 @@ ORDER BY created_at DESC;
 
 -- name: ListResourcesBySubjectWithOwner :many
 SELECT
-    r.id, r.title, r.description, r.file_url, r.file_size, r.created_at,
+    r.id, r.title, r.description, r.created_at,
     u.id AS owner_id, u.full_name AS owner_full_name, u.email AS owner_email, u.pfp AS owner_pfp
 FROM resources r
 JOIN users u ON r.owner_id = u.id
@@ -31,8 +31,8 @@ ORDER BY created_at DESC;
 
 -- name: CreateResource :one
 INSERT INTO resources (
-    owner_id, subject_id, title, description, file_url, file_size
+    owner_id, subject_id, title, description
 ) VALUES (
-    $1, $2, $3, $4, $5, $6
+    $1, $2, $3, $4
 )
 RETURNING *;

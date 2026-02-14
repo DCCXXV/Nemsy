@@ -19,16 +19,24 @@
 	let title = $state('');
 	let selectedSubject = $state<string | undefined>(undefined);
 	let description = $state('');
-	let selectedFile = $state<File | undefined>(undefined);
+	let selectedFiles = $state<Set<File>>(new Set());
 	let searchValue = $state('');
 
-	const fileInfo = $derived.by(() => {
-		if (!selectedFile) return null;
-		const name = selectedFile.name;
-		const ext = name.includes('.') ? (name.split('.').pop()?.toUpperCase() ?? '') : '';
-		const sizeMB = (selectedFile.size / 1024 / 1024).toFixed(2);
-		return { name, ext, sizeMB };
-	});
+	const filesArray = $derived(Array.from(selectedFiles));
+
+	function formatFileSize(bytes: number): string {
+		return (bytes / 1024 / 1024).toFixed(2);
+	}
+
+	function getFileExt(name: string): string {
+		const dot = name.lastIndexOf('.');
+		return dot >= 0 ? name.slice(dot + 1).toUpperCase() : '';
+	}
+
+	function removeFile(file: File) {
+		selectedFiles = new Set([...selectedFiles].filter((f) => f !== file));
+	}
+
 	let isSubmitting = $state(false);
 	let error = $state('');
 
@@ -48,7 +56,7 @@
 	);
 
 	async function handleSubmit() {
-		if (!title.trim() || !selectedSubject || !selectedFile) {
+		if (!title.trim() || !selectedSubject || selectedFiles.size === 0) {
 			error = 'Por favor, completa todos los campos obligatorios.';
 			return;
 		}
@@ -59,7 +67,9 @@
 		const formData = new FormData();
 		formData.append('title', title);
 		formData.append('subjectId', selectedSubject);
-		formData.append('file', selectedFile);
+		for (const file of selectedFiles) {
+			formData.append('files', file);
+		}
 		if (description.trim()) {
 			formData.append('description', description);
 		}
@@ -170,50 +180,53 @@
 		</div>
 
 		<div class="flex flex-col mb-4">
-			<span>Archivo*</span>
-			{#if fileInfo}
-				<div
-					class="flex items-center gap-3 mt-2 p-3 bg-zinc-100 border border-zinc-300 rounded-none"
-				>
-					<span class="flex-1 truncate text-sm font-medium">{fileInfo.name}</span>
-					<span
-						class="px-2 py-0.5 bg-lime-200 text-lime-700 text-xs font-semibold rounded-none uppercase"
-					>
-						{fileInfo.ext}
-					</span>
-					<span
-						class="px-2 py-0.5 bg-amber-200 text-amber-700 text-xs font-semibold rounded-none uppercase"
-					>
-						{fileInfo.sizeMB} MB
-					</span>
-					<button
-						type="button"
-						onclick={() => (selectedFile = undefined)}
-						class="text-zinc-500 hover:text-rose-500 cursor-pointer"
-						aria-label="Eliminar archivo"
-					>
-						<XIcon />
-					</button>
-				</div>
-			{:else}
-				<FileUpload bind:selected={selectedFile}>
-					{#snippet children(fileUpload)}
-						<input {...fileUpload.input} />
+			<span>Archivos*</span>
+			{#if filesArray.length > 0}
+				<div class="flex flex-col gap-2 mt-2">
+					{#each filesArray as file (file.name + file.size)}
 						<div
-							{...fileUpload.dropzone}
-							class="p-8 text-center border border-dashed border-zinc-300 rounded-none cursor-pointer hover:bg-zinc-50 text-zinc-500 transition-colors"
+							class="flex items-center gap-3 p-3 bg-zinc-100 border border-zinc-300 rounded-none"
 						>
-							{#if fileUpload.isDragging}
-								<CloudArrowUpIcon class="mx-auto size-8" />
-								Suelta el archivo aqui
-							{:else}
-								<CloudArrowUpIcon class="mx-auto size-8" />
-								Clica o arrastra para subir tu archivo
-							{/if}
+							<span class="flex-1 truncate text-sm font-medium">{file.name}</span>
+							<span
+								class="px-2 py-0.5 bg-lime-200 text-lime-700 text-xs font-semibold rounded-none uppercase"
+							>
+								{getFileExt(file.name)}
+							</span>
+							<span
+								class="px-2 py-0.5 bg-amber-200 text-amber-700 text-xs font-semibold rounded-none uppercase"
+							>
+								{formatFileSize(file.size)} MB
+							</span>
+							<button
+								type="button"
+								onclick={() => removeFile(file)}
+								class="text-zinc-500 hover:text-rose-500 cursor-pointer"
+								aria-label="Eliminar archivo"
+							>
+								<XIcon />
+							</button>
 						</div>
-					{/snippet}
-				</FileUpload>
+					{/each}
+				</div>
 			{/if}
+			<FileUpload multiple={true} bind:selected={selectedFiles}>
+				{#snippet children(fileUpload)}
+					<input {...fileUpload.input} />
+					<div
+						{...fileUpload.dropzone}
+						class="p-8 text-center border border-dashed border-zinc-300 rounded-none cursor-pointer hover:bg-zinc-50 text-zinc-500 transition-colors {filesArray.length > 0 ? 'mt-2' : ''}"
+					>
+						{#if fileUpload.isDragging}
+							<CloudArrowUpIcon class="mx-auto size-8" />
+							Suelta los archivos aqui
+						{:else}
+							<CloudArrowUpIcon class="mx-auto size-8" />
+							Clica o arrastra para subir archivos
+						{/if}
+					</div>
+				{/snippet}
+			</FileUpload>
 		</div>
 
 		<div class="flex flex-col">

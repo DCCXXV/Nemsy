@@ -13,11 +13,11 @@ import (
 
 const createResource = `-- name: CreateResource :one
 INSERT INTO resources (
-    owner_id, subject_id, title, description, file_url, file_size
+    owner_id, subject_id, title, description
 ) VALUES (
-    $1, $2, $3, $4, $5, $6
+    $1, $2, $3, $4
 )
-RETURNING id, owner_id, subject_id, title, description, file_url, file_size, created_at
+RETURNING id, owner_id, subject_id, title, description, created_at
 `
 
 type CreateResourceParams struct {
@@ -25,8 +25,6 @@ type CreateResourceParams struct {
 	SubjectID   int32
 	Title       string
 	Description pgtype.Text
-	FileUrl     string
-	FileSize    pgtype.Int8
 }
 
 func (q *Queries) CreateResource(ctx context.Context, arg CreateResourceParams) (Resource, error) {
@@ -35,8 +33,6 @@ func (q *Queries) CreateResource(ctx context.Context, arg CreateResourceParams) 
 		arg.SubjectID,
 		arg.Title,
 		arg.Description,
-		arg.FileUrl,
-		arg.FileSize,
 	)
 	var i Resource
 	err := row.Scan(
@@ -45,15 +41,13 @@ func (q *Queries) CreateResource(ctx context.Context, arg CreateResourceParams) 
 		&i.SubjectID,
 		&i.Title,
 		&i.Description,
-		&i.FileUrl,
-		&i.FileSize,
 		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const getResource = `-- name: GetResource :one
-SELECT id, owner_id, subject_id, title, description, file_url, file_size, created_at FROM resources
+SELECT id, owner_id, subject_id, title, description, created_at FROM resources
 WHERE id = $1 LIMIT 1
 `
 
@@ -66,8 +60,6 @@ func (q *Queries) GetResource(ctx context.Context, id int32) (Resource, error) {
 		&i.SubjectID,
 		&i.Title,
 		&i.Description,
-		&i.FileUrl,
-		&i.FileSize,
 		&i.CreatedAt,
 	)
 	return i, err
@@ -75,7 +67,7 @@ func (q *Queries) GetResource(ctx context.Context, id int32) (Resource, error) {
 
 const getResourceWithOwner = `-- name: GetResourceWithOwner :one
 SELECT
-    r.id, r.title, r.description, r.file_url, r.file_size, r.created_at,
+    r.id, r.title, r.description, r.created_at,
     u.id AS owner_id, u.full_name AS owner_full_name, u.email AS owner_email, u.pfp AS owner_pfp
 FROM resources r
 JOIN users u ON r.owner_id = u.id
@@ -86,8 +78,6 @@ type GetResourceWithOwnerRow struct {
 	ID            int32
 	Title         string
 	Description   pgtype.Text
-	FileUrl       string
-	FileSize      pgtype.Int8
 	CreatedAt     pgtype.Timestamp
 	OwnerID       int32
 	OwnerFullName pgtype.Text
@@ -102,8 +92,6 @@ func (q *Queries) GetResourceWithOwner(ctx context.Context, id int32) (GetResour
 		&i.ID,
 		&i.Title,
 		&i.Description,
-		&i.FileUrl,
-		&i.FileSize,
 		&i.CreatedAt,
 		&i.OwnerID,
 		&i.OwnerFullName,
@@ -114,7 +102,7 @@ func (q *Queries) GetResourceWithOwner(ctx context.Context, id int32) (GetResour
 }
 
 const listResourcesByOwner = `-- name: ListResourcesByOwner :many
-SELECT id, owner_id, subject_id, title, description, file_url, file_size, created_at FROM resources
+SELECT id, owner_id, subject_id, title, description, created_at FROM resources
 WHERE owner_id = $1
 ORDER BY created_at DESC
 `
@@ -134,8 +122,6 @@ func (q *Queries) ListResourcesByOwner(ctx context.Context, ownerID int32) ([]Re
 			&i.SubjectID,
 			&i.Title,
 			&i.Description,
-			&i.FileUrl,
-			&i.FileSize,
 			&i.CreatedAt,
 		); err != nil {
 			return nil, err
@@ -149,7 +135,7 @@ func (q *Queries) ListResourcesByOwner(ctx context.Context, ownerID int32) ([]Re
 }
 
 const listResourcesBySubject = `-- name: ListResourcesBySubject :many
-SELECT id, owner_id, subject_id, title, description, file_url, file_size, created_at FROM resources
+SELECT id, owner_id, subject_id, title, description, created_at FROM resources
 WHERE subject_id = $1
 ORDER BY created_at DESC
 `
@@ -169,8 +155,6 @@ func (q *Queries) ListResourcesBySubject(ctx context.Context, subjectID int32) (
 			&i.SubjectID,
 			&i.Title,
 			&i.Description,
-			&i.FileUrl,
-			&i.FileSize,
 			&i.CreatedAt,
 		); err != nil {
 			return nil, err
@@ -185,7 +169,7 @@ func (q *Queries) ListResourcesBySubject(ctx context.Context, subjectID int32) (
 
 const listResourcesBySubjectWithOwner = `-- name: ListResourcesBySubjectWithOwner :many
 SELECT
-    r.id, r.title, r.description, r.file_url, r.file_size, r.created_at,
+    r.id, r.title, r.description, r.created_at,
     u.id AS owner_id, u.full_name AS owner_full_name, u.email AS owner_email, u.pfp AS owner_pfp
 FROM resources r
 JOIN users u ON r.owner_id = u.id
@@ -197,8 +181,6 @@ type ListResourcesBySubjectWithOwnerRow struct {
 	ID            int32
 	Title         string
 	Description   pgtype.Text
-	FileUrl       string
-	FileSize      pgtype.Int8
 	CreatedAt     pgtype.Timestamp
 	OwnerID       int32
 	OwnerFullName pgtype.Text
@@ -219,8 +201,6 @@ func (q *Queries) ListResourcesBySubjectWithOwner(ctx context.Context, subjectID
 			&i.ID,
 			&i.Title,
 			&i.Description,
-			&i.FileUrl,
-			&i.FileSize,
 			&i.CreatedAt,
 			&i.OwnerID,
 			&i.OwnerFullName,

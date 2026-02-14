@@ -19,12 +19,17 @@ export interface Subject {
 	year?: string;
 }
 
+export interface ResourceFile {
+	id: number;
+	fileName: string;
+	fileSize: number;
+}
+
 export interface Resource {
 	id: number;
 	title: string;
 	description?: string;
-	fileUrl: string;
-	fileSize?: number;
+	files: ResourceFile[];
 	createdAt: string;
 	owner?: {
 		id: number;

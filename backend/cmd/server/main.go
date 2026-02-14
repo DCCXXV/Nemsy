@@ -13,6 +13,7 @@ import (
 	"github.com/DCCXXV/Nemsy/backend/internal/auth"
 	db "github.com/DCCXXV/Nemsy/backend/internal/db/generated"
 	"github.com/DCCXXV/Nemsy/backend/internal/resources"
+	"github.com/DCCXXV/Nemsy/backend/internal/storage"
 	"github.com/DCCXXV/Nemsy/backend/internal/studies"
 	"github.com/DCCXXV/Nemsy/backend/internal/users"
 	"github.com/go-chi/chi/v5"
@@ -21,11 +22,6 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 )
-
-type App struct {
-	DB      *pgxpool.Pool
-	Queries *db.Queries
-}
 
 func main() {
 	_ = godotenv.Load()
@@ -44,9 +40,25 @@ func main() {
 
 	queries := db.New(pool)
 
+	s3Endpoint := os.Getenv("S3_ENDPOINT")
+	s3AccessKey := os.Getenv("S3_ACCESS_KEY")
+	s3SecretKey := os.Getenv("S3_SECRET_KEY")
+	s3Bucket := os.Getenv("S3_BUCKET")
+	s3UseSSL := os.Getenv("S3_USE_SSL") != "false"
+
+	if s3Endpoint == "" || s3AccessKey == "" || s3SecretKey == "" || s3Bucket == "" {
+		log.Fatal("S3_ENDPOINT, S3_ACCESS_KEY, S3_SECRET_KEY, and S3_BUCKET must be set")
+	}
+
+	s3Client, err := storage.NewS3Client(s3Endpoint, s3AccessKey, s3SecretKey, s3Bucket, s3UseSSL)
+	if err != nil {
+		log.Fatalf("Failed to create S3 client: %v", err)
+	}
+
 	myApp := &app.App{
 		Queries: queries,
 		DB:      pool,
+		Storage: s3Client,
 	}
 
 	secret := []byte(os.Getenv("JWT_SECRET"))
@@ -74,14 +86,6 @@ func main() {
 	r.Get("/auth/login", authHandler.LoginHandler)
 	r.Get("/auth/callback", authHandler.CallbackHandler)
 
-	// TODO: S3 object storage, using local storage for testing
-	uploadDir := os.Getenv("UPLOAD_DIR")
-	if uploadDir == "" {
-		uploadDir = "./uploads"
-	}
-	fileServer := http.FileServer(http.Dir(uploadDir))
-	r.Handle("/uploads/*", http.StripPrefix("/uploads/", fileServer))
-
 	mw := &auth.AuthMiddleware{Secret: secret}
 	r.Group(func(protected chi.Router) {
 		protected.Use(mw.Middleware)
@@ -97,6 +101,7 @@ func main() {
 		protected.Post("/api/resources", resourcesHandler.Create)
 		protected.Get("/api/resources/{id}", resourcesHandler.Get)
 		protected.Get("/api/resources/{id}/download", resourcesHandler.Download)
+		protected.Get("/api/resources/{id}/files/{fileId}/download", resourcesHandler.DownloadFile)
 		protected.Get("/api/subjects/{id}/resources", resourcesHandler.ListBySubject)
 	})
 

@@ -12,9 +12,12 @@ import (
 
 type Querier interface {
 	CreateResource(ctx context.Context, arg CreateResourceParams) (Resource, error)
+	CreateResourceFile(ctx context.Context, arg CreateResourceFileParams) (ResourceFile, error)
 	CreateSubject(ctx context.Context, arg CreateSubjectParams) (Subject, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
+	DeleteResourceFile(ctx context.Context, id int32) error
 	GetResource(ctx context.Context, id int32) (Resource, error)
+	GetResourceFile(ctx context.Context, id int32) (ResourceFile, error)
 	GetResourceWithOwner(ctx context.Context, id int32) (GetResourceWithOwnerRow, error)
 	GetStudy(ctx context.Context, id int32) (Study, error)
 	GetSubject(ctx context.Context, id int32) (Subject, error)
@@ -22,6 +25,7 @@ type Querier interface {
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetUserWithStudy(ctx context.Context, id int32) (GetUserWithStudyRow, error)
 	GetUserWithStudyByEmail(ctx context.Context, email string) (GetUserWithStudyByEmailRow, error)
+	ListFilesByResource(ctx context.Context, resourceID int32) ([]ResourceFile, error)
 	ListResourcesByOwner(ctx context.Context, ownerID int32) ([]Resource, error)
 	ListResourcesBySubject(ctx context.Context, subjectID int32) ([]Resource, error)
 	ListResourcesBySubjectWithOwner(ctx context.Context, subjectID int32) ([]ListResourcesBySubjectWithOwnerRow, error)
