@@ -4,7 +4,9 @@ import (
 	"archive/zip"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
+	"mime"
 	"net/http"
 	"path/filepath"
 	"strconv"
@@ -359,14 +361,23 @@ func (h *Handler) DownloadFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	presigned, err := h.app.Storage.GetPresignedURL(r.Context(), file.S3Key, 15*time.Minute)
+	obj, size, err := h.app.Storage.GetObject(r.Context(), file.S3Key)
 	if err != nil {
-		log.Printf("Failed to generate presigned URL: %v", err)
+		log.Printf("Failed to get object: %v", err)
 		http.Error(w, "download error", http.StatusInternalServerError)
 		return
 	}
+	defer obj.Close()
 
-	http.Redirect(w, r, presigned, http.StatusTemporaryRedirect)
+	contentType := mime.TypeByExtension(filepath.Ext(file.FileName))
+	if contentType == "" {
+		contentType = "application/octet-stream"
+	}
+
+	w.Header().Set("Content-Type", contentType)
+	w.Header().Set("Content-Length", strconv.FormatInt(size, 10))
+	w.Header().Set("Content-Disposition", fmt.Sprintf(`inline; filename="%s"`, file.FileName))
+	io.Copy(w, obj)
 }
 
 func (h *Handler) cleanupS3(r *http.Request, keys []string) {

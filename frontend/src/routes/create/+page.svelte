@@ -88,7 +88,7 @@
 				error = text || 'Error al subir el recurso.';
 			}
 		} catch (err) {
-			error = 'Error de conexion.';
+			error = 'Error de conexion: (' + err + ')';
 		} finally {
 			isSubmitting = false;
 		}
@@ -215,7 +215,10 @@
 					<input {...fileUpload.input} />
 					<div
 						{...fileUpload.dropzone}
-						class="p-8 text-center border border-dashed border-zinc-300 rounded-none cursor-pointer hover:bg-zinc-50 text-zinc-500 transition-colors {filesArray.length > 0 ? 'mt-2' : ''}"
+						class="p-8 text-center border border-dashed border-zinc-300 rounded-none cursor-pointer hover:bg-zinc-50 text-zinc-500 transition-colors {filesArray.length >
+						0
+							? 'mt-2'
+							: ''}"
 					>
 						{#if fileUpload.isDragging}
 							<CloudArrowUpIcon class="mx-auto size-8" />

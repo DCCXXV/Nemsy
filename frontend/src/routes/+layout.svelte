@@ -28,17 +28,16 @@
 				<div class="relative" use:clickOutside onoutclick={closeMenu}>
 					<button
 						aria-label="menú-móvil"
-						class="lg:hidden h-10 px-2 py-2 mr-2 rounded-none bg-zinc-100 border-2 border-zinc-900 transition-colors inline-flex items-center cursor-pointer hover:bg-zinc-200"
+						class="md:hidden h-10 px-2 py-2 mr-2 rounded-none bg-zinc-50 border border-zinc-300 transition-colors inline-flex items-center cursor-pointer hover:bg-zinc-200"
 						onclick={() => (isMenuOpen = !isMenuOpen)}
 					>
 						<ListIcon />
 					</button>
 					{#if isMenuOpen}
 						<ul
-							class="absolute bg-zinc-100 rounded-none z-10 mt-3 w-52 p-2 list-none border-zinc-900 border-2 transition-opacity"
+							class="absolute bg-zinc-100 rounded-none z-10 mt-3 w-52 p-2 list-none border-zinc-300 border transition-opacity"
 						>
 							<li><a class="block px-4 py-2 hover:bg-zinc-200 rounded-none" href="/">Inicio</a></li>
-							<li><a class="block px-4 py-2 hover:bg-zinc-200 rounded-none" href="#">Buscar</a></li>
 							<li>
 								<a class="block px-4 py-2 hover:bg-zinc-200 rounded-none" href="/create">Crear</a>
 							</li>
@@ -55,7 +54,7 @@
 				</a>
 			</div>
 
-			<div class="hidden lg:flex flex-1 justify-center">
+			<div class="hidden md:flex flex-1 justify-center">
 				<ul class="flex list-none bg-zinc-50 rounded-none">
 					<li>
 						<a
@@ -94,8 +93,8 @@
 						{props.data.me?.email?.split('@')[0]}
 					</div>
 				{:else}
-					<button
-						onclick={() => (window.location.href = '/auth')}
+					<a
+						href="/auth"
 						class="h-10 px-4 py-2 bg-blue-200 text-blue-900 hover:bg-blue-100 border-blue-200 border rounded-none transition-colors inline-flex items-center cursor-pointer"
 					>
 						<svg
@@ -114,7 +113,7 @@
 							></path></svg
 						>
 						Iniciar sesión
-					</button>
+					</a>
 				{/if}
 			</div>
 		</div>

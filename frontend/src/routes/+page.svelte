@@ -23,10 +23,12 @@
 	import ArrowUpRightIcon from 'phosphor-svelte/lib/ArrowUpRightIcon';
 	import FilePdfIcon from 'phosphor-svelte/lib/FilePdfIcon';
 	import QuestionIcon from 'phosphor-svelte/lib/QuestionIcon';
-	import ClockClockwise from 'phosphor-svelte/lib/ClockClockwise';
+	import ClockClockwiseIcon from 'phosphor-svelte/lib/ClockClockwiseIcon';
 	import FolderIcon from 'phosphor-svelte/lib/FolderIcon';
+	import ImageIcon from 'phosphor-svelte/lib/ImageIcon';
 
 	import type { Resource } from '$lib/types';
+	import PdfThumbnail from '$lib/components/PdfThumbnail.svelte';
 
 	function getFirstFileExt(resource: Resource): string {
 		if (!resource.files?.length) return '';
@@ -203,7 +205,7 @@
 				<div class="bg-zinc-100 border-b border-zinc-300 flex items-center py-1 justify-end">
 					<div class="text-zinc-500 bg-zinc-100 border-l border-zinc-300">
 						<button class="flex gap-1 items-center justify-center px-2">
-							<ClockClockwise class="size-6" />
+							<ClockClockwiseIcon class="size-6" />
 							<span class="w-20 text-left">Recientes</span>
 						</button>
 					</div>
@@ -213,7 +215,7 @@
 							onclick={() => selectViewMode(!compactMode)}
 						>
 							<ImagesIcon class="size-6" />
-							<span class="w-20 text-left">{compactMode ? 'Compacto' : 'Comforte'}</span>
+							<span class="w-23 text-left">{compactMode ? 'Compacto' : 'Desplegado'}</span>
 						</button>
 					</div>
 				</div>
@@ -222,7 +224,7 @@
 				>
 					<p>¿Quieres compartir un recurso para esta asignatura?</p>
 					<button
-						class="flex items-center bg-zinc-50 text-sm text-zinc-600 p-1 border border-yellow-300 cursor-pointer hover:underline"
+						class="flex items-center bg-zinc-50 text-sm text-zinc-600 p-1 border border-yellow-300 cursor-pointer hover:underline rounded-none"
 					>
 						Compartir <ArrowUpRightIcon class="size-4 ml-2" />
 					</button>
@@ -235,21 +237,27 @@
 								<div class="border-b last:border-b-0 p-2 border-zinc-200 flex gap-3">
 									{#if resource.files.length > 1}
 										<div
-											class="w-20 self-stretch rounded-none border border-yellow-300 bg-yellow-100 flex items-center justify-center"
+											class="w-20 self-stretch rounded-none border border-yellow-400 bg-yellow-400 flex items-center justify-center"
 										>
-											<FolderIcon class="size-12 text-yellow-600" />
+											<FolderIcon weight="fill" class="size-12 text-zinc-50" />
 										</div>
 									{:else if isPdf(getFirstFileExt(resource))}
 										<div
-											class="w-20 self-stretch rounded-none border border-red-200 bg-red-50 flex items-center justify-center"
+											class="w-20 self-stretch rounded-none border border-red-400 bg-red-400 flex items-center justify-center"
 										>
-											<FilePdfIcon class="size-12 text-red-400" />
+											<FilePdfIcon weight="fill" class="size-12 text-zinc-50" />
+										</div>
+									{:else if isImage(getFirstFileExt(resource))}
+										<div
+											class="w-20 self-stretch rounded-none border border-lime-400 bg-lime-400 flex items-center justify-center"
+										>
+											<ImageIcon weight="fill" class="size-12 text-zinc-50" />
 										</div>
 									{:else}
 										<div
-											class="w-20 self-stretch rounded-none border border-zinc-300 bg-zinc-100 flex items-center justify-center"
+											class="w-20 self-stretch rounded-none border border-violet-400 bg-violet-400 flex items-center justify-center"
 										>
-											<QuestionIcon class="size-12 text-zinc-500" />
+											<QuestionIcon weight="fill" class="size-12 text-zinc-50" />
 										</div>
 									{/if}
 									<div class="flex flex-col flex-1 justify-between py-1">
@@ -267,7 +275,7 @@
 											>-->
 											<a href="{PUBLIC_API_BASE_URL}/api/resources/{resource.id}/download">
 												<button
-													class="bg-blue-200 border border-blue-100 hover:bg-blue-100 text-blue-900 px-2 py-0.5 flex items-center cursor-pointer text-sm"
+													class="bg-blue-200 border border-blue-100 hover:bg-blue-100 text-blue-900 px-2 py-0.5 flex items-center cursor-pointer text-sm rounded-none"
 													><DownloadSimpleIcon class="size-4 mr-1" />Descargar</button
 												></a
 											>
@@ -295,14 +303,26 @@
 											class="rounded-none border border-zinc-300 overflow-hidden flex items-center justify-center bg-white"
 										>
 											{#if resource.files.length > 1}
-												<FolderIcon class="size-12 h-24 text-yellow-600 mr-2" />
-												<p class="text-xl text-yellow-600">{resource.files.length} archivos</p>
+												<div class="bg-yellow-200 w-full h-24 justify-center flex items-center">
+													<FolderIcon class="size-12 text-yellow-700 mr-2" />
+													<p class="text-2xl text-yellow-700">({resource.files.length} archivos)</p>
+												</div>
 											{:else if isPdf(getFirstFileExt(resource))}
-												<FilePdfIcon class="size-12 h-24 text-red-300 mr-2" />
-												<p class="text-xl text-red-300">Previsualización de PDFs no disponible</p>
+												<PdfThumbnail
+													url="{PUBLIC_API_BASE_URL}/api/resources/{resource.id}/files/{resource
+														.files[0].id}/download"
+												/>
+											{:else if isImage(getFirstFileExt(resource))}
+												<img
+													src="{PUBLIC_API_BASE_URL}/api/resources/{resource.id}/files/{resource
+														.files[0].id}/download"
+													alt="imagen del recurso"
+												/>
 											{:else}
-												<QuestionIcon class="size-12 h-24 text-zinc-400 mr-2" />
-												<p class="text-xl text-zinc-400">Formato desconocido</p>
+												<div class="bg-zinc-100 w-full h-24 justify-center flex items-center">
+													<QuestionIcon class="size-12 text-zinc-500 mr-2" />
+													<p class="text-2xl text-zinc-500">Formato desconocido</p>
+												</div>
 											{/if}
 										</div>
 										<p class="text-zinc-700">{resource.description}</p>
@@ -314,7 +334,7 @@
 											>-->
 											<a href="{PUBLIC_API_BASE_URL}/api/resources/{resource.id}/download">
 												<button
-													class="bg-blue-200 border border-blue-100 hover:bg-blue-100 text-blue-900 px-3 py-1 flex items-center cursor-pointer"
+													class="bg-blue-200 border border-blue-100 hover:bg-blue-100 text-blue-900 px-3 py-1 flex items-center cursor-pointer rounded-none"
 													><DownloadSimpleIcon class="size-5 mr-2" />Descargar</button
 												></a
 											>
