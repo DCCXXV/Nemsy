@@ -13,14 +13,23 @@
 
 	import { PUBLIC_API_BASE_URL } from '$env/static/public';
 	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
+	import { untrack } from 'svelte';
 
 	let { data } = $props();
 
 	let title = $state('');
-	let selectedSubject = $state<string | undefined>(undefined);
+	let selectedSubject = $state<string | undefined>(
+		page.url.searchParams.get('subject') ?? undefined
+	);
 	let description = $state('');
 	let selectedFiles = $state<Set<File>>(new Set());
-	let searchValue = $state('');
+	const initialSubjectId = page.url.searchParams.get('subject');
+	let searchValue = $state(
+		untrack(() =>
+			initialSubjectId ? (data.subjects.find((s) => String(s.id) === initialSubjectId)?.name ?? '') : ''
+		)
+	);
 
 	const filesArray = $derived(Array.from(selectedFiles));
 
@@ -131,6 +140,7 @@
 					<BookIcon class="absolute left-3 top-1/2 size-5 -translate-y-1/2 text-zinc-900" />
 					<Combobox.Input
 						oninput={(e) => (searchValue = e.currentTarget.value)}
+						defaultValue={searchValue}
 						class="w-full h-10 pl-10 pr-10 bg-zinc-100 border border-zinc-300 rounded-none text-zinc-700 text placeholder:text-zinc-400 focus:ring-0 focus:border-blue-600"
 						placeholder="Buscar asignatura"
 						aria-label="Buscar asignatura"

@@ -223,11 +223,11 @@
 					class="bg-yellow-100 border-b border-yellow-300 text-yellow-700 flex items-center px-2 pb-2 pt-4 justify-between"
 				>
 					<p>¿Quieres compartir un recurso para esta asignatura?</p>
-					<button
+					<a href="/create{selectedSubjectID ? `?subject=${selectedSubjectID}` : ''}"
 						class="flex items-center bg-zinc-50 text-sm text-zinc-600 p-1 border border-yellow-300 cursor-pointer hover:underline rounded-none"
 					>
 						Compartir <ArrowUpRightIcon class="size-4 ml-2" />
-					</button>
+					</a>
 				</div>
 
 				<div>
