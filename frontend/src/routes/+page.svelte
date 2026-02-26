@@ -6,17 +6,19 @@
 	import type { Subject } from '$lib/types';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
+	import { onMount, untrack } from 'svelte';
 
 	import { Toggle } from 'melt/components';
 	import { Tooltip } from 'melt/components';
 
 	import DownloadSimpleIcon from 'phosphor-svelte/lib/DownloadSimpleIcon';
+	/*
 	import ArrowFatUpIcon from 'phosphor-svelte/lib/ArrowFatUpIcon';
 	import ArrowFatDownIcon from 'phosphor-svelte/lib/ArrowFatDownIcon';
 	import ArchiveIcon from 'phosphor-svelte/lib/ArchiveIcon';
 	import RowsIcon from 'phosphor-svelte/lib/RowsIcon';
 	import SquareIcon from 'phosphor-svelte/lib/SquareIcon';
+	*/
 	import PushPinIcon from 'phosphor-svelte/lib/PushPinIcon';
 	import ImagesIcon from 'phosphor-svelte/lib/ImagesIcon';
 	import PencilRulerIcon from 'phosphor-svelte/lib/PencilRulerIcon';
@@ -47,6 +49,52 @@
 
 	let { data }: { data: PageData } = $props();
 
+	const PAGE_SIZE = 10;
+	let extraResources = $state<Resource[]>([]);
+	let offset = $state(untrack(() => data.resources.length));
+	let hasMore = $state(untrack(() => data.resources.length === PAGE_SIZE));
+	let loadingMore = $state(false);
+	let sentinel = $state<HTMLDivElement | undefined>(undefined);
+
+	const resources = $derived([...data.resources, ...extraResources]);
+
+	$effect(() => {
+		void data.resources;
+		extraResources = [];
+		offset = data.resources.length;
+		hasMore = data.resources.length === PAGE_SIZE;
+	});
+
+	async function loadMore() {
+		if (loadingMore || !hasMore || !selectedSubjectID) return;
+		loadingMore = true;
+		try {
+			const res = await fetch(
+				`${PUBLIC_API_BASE_URL}/api/subjects/${selectedSubjectID}/resources?limit=${PAGE_SIZE}&offset=${offset}`,
+				{ credentials: 'include' }
+			);
+			if (res.ok) {
+				const next: Resource[] = await res.json();
+				extraResources = [...extraResources, ...next];
+				offset += next.length;
+				hasMore = next.length === PAGE_SIZE;
+			}
+		} finally {
+			loadingMore = false;
+		}
+	}
+
+	onMount(() => {
+		const observer = new IntersectionObserver(
+			(entries) => {
+				if (entries[0].isIntersecting) loadMore();
+			},
+			{ rootMargin: '300px' }
+		);
+		if (sentinel) observer.observe(sentinel);
+		return () => observer.disconnect();
+	});
+
 	const subjectsByYear = $derived(
 		data.subjects.reduce(
 			(acc, subject) => {
@@ -66,7 +114,7 @@
 		data.subjects.find((s) => s.id.toString() === selectedSubjectID)
 	);
 
-	let selectedTab = $state(tabIds[0]);
+	let selectedTab = $state(untrack(() => tabIds[0]));
 	let compactMode = $state(false);
 
 	function selectSubject(id: string) {
@@ -163,7 +211,7 @@
 				</div>
 			</div>
 			<div
-				class="bg-zinc-50 border border-zinc-300 rounded-none w-1/2 mx-4 {data.resources.length
+				class="bg-zinc-50 border border-zinc-300 rounded-none w-1/2 mx-4 {resources.length
 					? ''
 					: 'border-b-0'}"
 			>
@@ -223,7 +271,8 @@
 					class="bg-yellow-100 border-b border-yellow-300 text-yellow-700 flex items-center px-2 pb-2 pt-4 justify-between"
 				>
 					<p>¿Quieres compartir un recurso para esta asignatura?</p>
-					<a href="/create{selectedSubjectID ? `?subject=${selectedSubjectID}` : ''}"
+					<a
+						href="/create{selectedSubjectID ? `?subject=${selectedSubjectID}` : ''}"
 						class="flex items-center bg-zinc-50 text-sm text-zinc-600 p-1 border border-yellow-300 cursor-pointer hover:underline rounded-none"
 					>
 						Compartir <ArrowUpRightIcon class="size-4 ml-2" />
@@ -232,7 +281,7 @@
 
 				<div>
 					{#if selectedSubject}
-						{#each data.resources as resource (resource.id)}
+						{#each resources as resource (resource.id)}
 							{#if compactMode}
 								<div class="border-b last:border-b-0 p-2 border-zinc-200 flex gap-3">
 									{#if resource.files.length > 1}
@@ -345,6 +394,10 @@
 						{/each}
 					{:else}
 						<p class="text-zinc-500">Selecciona una asignatura para empezar</p>
+					{/if}
+					<div bind:this={sentinel}></div>
+					{#if loadingMore}
+						<div class="py-4 text-center text-zinc-400 animate-pulse text-sm">Cargando más...</div>
 					{/if}
 				</div>
 			</div>

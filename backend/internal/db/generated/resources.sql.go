@@ -216,3 +216,60 @@ func (q *Queries) ListResourcesBySubjectWithOwner(ctx context.Context, subjectID
 	}
 	return items, nil
 }
+
+const listResourcesBySubjectWithOwnerPaginated = `-- name: ListResourcesBySubjectWithOwnerPaginated :many
+SELECT
+    r.id, r.title, r.description, r.created_at,
+    u.id AS owner_id, u.full_name AS owner_full_name, u.email AS owner_email, u.pfp AS owner_pfp
+FROM resources r
+JOIN users u ON r.owner_id = u.id
+WHERE r.subject_id = $1
+ORDER BY r.created_at DESC
+LIMIT $2 OFFSET $3
+`
+
+type ListResourcesBySubjectWithOwnerPaginatedParams struct {
+	SubjectID int32
+	Limit     int32
+	Offset    int32
+}
+
+type ListResourcesBySubjectWithOwnerPaginatedRow struct {
+	ID            int32
+	Title         string
+	Description   pgtype.Text
+	CreatedAt     pgtype.Timestamp
+	OwnerID       int32
+	OwnerFullName pgtype.Text
+	OwnerEmail    string
+	OwnerPfp      pgtype.Text
+}
+
+func (q *Queries) ListResourcesBySubjectWithOwnerPaginated(ctx context.Context, arg ListResourcesBySubjectWithOwnerPaginatedParams) ([]ListResourcesBySubjectWithOwnerPaginatedRow, error) {
+	rows, err := q.db.Query(ctx, listResourcesBySubjectWithOwnerPaginated, arg.SubjectID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListResourcesBySubjectWithOwnerPaginatedRow
+	for rows.Next() {
+		var i ListResourcesBySubjectWithOwnerPaginatedRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Title,
+			&i.Description,
+			&i.CreatedAt,
+			&i.OwnerID,
+			&i.OwnerFullName,
+			&i.OwnerEmail,
+			&i.OwnerPfp,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

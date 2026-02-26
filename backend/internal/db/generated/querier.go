@@ -29,6 +29,7 @@ type Querier interface {
 	ListResourcesByOwner(ctx context.Context, ownerID int32) ([]Resource, error)
 	ListResourcesBySubject(ctx context.Context, subjectID int32) ([]Resource, error)
 	ListResourcesBySubjectWithOwner(ctx context.Context, subjectID int32) ([]ListResourcesBySubjectWithOwnerRow, error)
+	ListResourcesBySubjectWithOwnerPaginated(ctx context.Context, arg ListResourcesBySubjectWithOwnerPaginatedParams) ([]ListResourcesBySubjectWithOwnerPaginatedRow, error)
 	ListStudies(ctx context.Context) ([]Study, error)
 	ListSubjects(ctx context.Context) ([]Subject, error)
 	ListSubjectsByStudy(ctx context.Context, studyID pgtype.Int4) ([]Subject, error)

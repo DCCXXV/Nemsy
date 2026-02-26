@@ -24,7 +24,7 @@ export const load: PageServerLoad = async ({ fetch, url, parent }) => {
 
 		if (subjectId) {
 			const resourcesRes = await fetch(
-				`${PUBLIC_API_BASE_URL}/api/subjects/${subjectId}/resources`,
+				`${PUBLIC_API_BASE_URL}/api/subjects/${subjectId}/resources?limit=10`,
 				{
 					credentials: 'include'
 				}

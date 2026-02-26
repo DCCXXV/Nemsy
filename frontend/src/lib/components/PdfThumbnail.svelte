@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import CircleNotchIcon from 'phosphor-svelte/lib/CircleNotchIcon';
 
 	let { url }: { url: string } = $props();
 
@@ -38,10 +39,10 @@
 	});
 </script>
 
-<div class="w-full max-h-100 overflow-hidden">
+<div class="relative w-full max-h-100 overflow-hidden {loading && !error ? 'aspect-3/4' : ''}">
 	{#if loading && !error}
-		<div class="h-48 flex items-center justify-center text-zinc-400 animate-pulse">
-			Cargando previsualización...
+		<div class="absolute inset-0 flex items-center justify-center">
+			<CircleNotchIcon class="size-8 text-zinc-400 animate-spin" />
 		</div>
 	{/if}
 	{#if error}
@@ -49,5 +50,5 @@
 			Error al cargar la previsualización
 		</div>
 	{/if}
-	<canvas bind:this={canvas} class="w-full {loading ? 'hidden' : ''}"></canvas>
+	<canvas bind:this={canvas} class="w-full {loading || error ? 'hidden' : ''}"></canvas>
 </div>

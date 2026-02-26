@@ -217,7 +217,24 @@ func (h *Handler) ListBySubject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resources, err := h.app.Queries.ListResourcesBySubjectWithOwner(r.Context(), int32(id))
+	limit := 10
+	offset := 0
+	if l := r.URL.Query().Get("limit"); l != "" {
+		if v, err := strconv.Atoi(l); err == nil && v > 0 {
+			limit = v
+		}
+	}
+	if o := r.URL.Query().Get("offset"); o != "" {
+		if v, err := strconv.Atoi(o); err == nil && v >= 0 {
+			offset = v
+		}
+	}
+
+	resources, err := h.app.Queries.ListResourcesBySubjectWithOwnerPaginated(r.Context(), db.ListResourcesBySubjectWithOwnerPaginatedParams{
+		SubjectID: int32(id),
+		Limit:     int32(limit),
+		Offset:    int32(offset),
+	})
 	if err != nil {
 		log.Printf("Failed to list resources: %v", err)
 		http.Error(w, "database error", http.StatusInternalServerError)
