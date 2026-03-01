@@ -93,6 +93,8 @@ func main() {
 		protected.Get("/api/me", usersHandler.MeHandler)
 		protected.Put("/api/me/study", usersHandler.UpdateUserStudy)
 		protected.Get("/api/me/subjects", usersHandler.MySubjects)
+		protected.Post("/api/me/subjects/{id}/pin", usersHandler.PinSubject)
+		protected.Delete("/api/me/subjects/{id}/pin", usersHandler.UnpinSubject)
 
 		protected.Get("/api/users/{id}", usersHandler.Get)
 

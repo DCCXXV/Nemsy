@@ -17,6 +17,7 @@ export interface Subject {
 	id: number;
 	name: string;
 	year?: string;
+	pinned?: boolean;
 }
 
 export interface ResourceFile {

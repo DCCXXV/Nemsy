@@ -8,6 +8,12 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type PinnedSubject struct {
+	UserID    int32
+	SubjectID int32
+	CreatedAt pgtype.Timestamp
+}
+
 type Resource struct {
 	ID          int32
 	OwnerID     int32

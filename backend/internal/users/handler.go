@@ -105,12 +105,24 @@ func (h *Handler) UpdateUserStudy(w http.ResponseWriter, r *http.Request) {
 }
 
 type SubjectResponse struct {
-	ID   int32  `json:"id"`
-	Name string `json:"name"`
-	Year string `json:"year,omitempty"`
+	ID     int32  `json:"id"`
+	Name   string `json:"name"`
+	Year   string `json:"year,omitempty"`
+	Pinned bool   `json:"pinned"`
 }
 
 func (h *Handler) MySubjects(w http.ResponseWriter, r *http.Request) {
+	userIDVal := r.Context().Value(auth.CtxUserID)
+	if userIDVal == nil {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+	userID, ok := userIDVal.(int32)
+	if !ok {
+		http.Error(w, "invalid user ID type", http.StatusInternalServerError)
+		return
+	}
+
 	userInfo, ok := r.Context().Value(auth.CtxUserInfo).(auth.UserInfo)
 	if !ok || userInfo.Email == "" {
 		http.Error(w, "unauthorized", http.StatusUnauthorized)
@@ -129,7 +141,10 @@ func (h *Handler) MySubjects(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	subjects, err := h.app.Queries.ListSubjectsByStudy(r.Context(), user.StudyID)
+	subjects, err := h.app.Queries.ListSubjectsByStudyWithPinned(r.Context(), db.ListSubjectsByStudyWithPinnedParams{
+		StudyID: user.StudyID,
+		UserID:  userID,
+	})
 	if err != nil {
 		log.Printf("Error fetching subjects: %v", err)
 		http.Error(w, "database error", http.StatusInternalServerError)
@@ -139,8 +154,9 @@ func (h *Handler) MySubjects(w http.ResponseWriter, r *http.Request) {
 	resp := make([]SubjectResponse, len(subjects))
 	for i, s := range subjects {
 		resp[i] = SubjectResponse{
-			ID:   s.ID,
-			Name: s.Name,
+			ID:     s.ID,
+			Name:   s.Name,
+			Pinned: s.Pinned,
 		}
 		if s.Year.Valid {
 			resp[i].Year = s.Year.String
@@ -149,6 +165,68 @@ func (h *Handler) MySubjects(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(resp)
+}
+
+func (h *Handler) PinSubject(w http.ResponseWriter, r *http.Request) {
+	userIDVal := r.Context().Value(auth.CtxUserID)
+	if userIDVal == nil {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+	userID, ok := userIDVal.(int32)
+	if !ok {
+		http.Error(w, "invalid user ID type", http.StatusInternalServerError)
+		return
+	}
+
+	idStr := chi.URLParam(r, "id")
+	subjectID, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "invalid id", http.StatusBadRequest)
+		return
+	}
+
+	if err := h.app.Queries.PinSubject(r.Context(), db.PinSubjectParams{
+		UserID:    userID,
+		SubjectID: int32(subjectID),
+	}); err != nil {
+		log.Printf("Error pinning subject: %v", err)
+		http.Error(w, "database error", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *Handler) UnpinSubject(w http.ResponseWriter, r *http.Request) {
+	userIDVal := r.Context().Value(auth.CtxUserID)
+	if userIDVal == nil {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+	userID, ok := userIDVal.(int32)
+	if !ok {
+		http.Error(w, "invalid user ID type", http.StatusInternalServerError)
+		return
+	}
+
+	idStr := chi.URLParam(r, "id")
+	subjectID, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "invalid id", http.StatusBadRequest)
+		return
+	}
+
+	if err := h.app.Queries.UnpinSubject(r.Context(), db.UnpinSubjectParams{
+		UserID:    userID,
+		SubjectID: int32(subjectID),
+	}); err != nil {
+		log.Printf("Error unpinning subject: %v", err)
+		http.Error(w, "database error", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {

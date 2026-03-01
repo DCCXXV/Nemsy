@@ -2,7 +2,8 @@ import { PUBLIC_API_BASE_URL } from '$env/static/public';
 import type { PageServerLoad } from './$types';
 import type { Subject, Resource } from '$lib/types';
 
-export const load: PageServerLoad = async ({ fetch, url, parent }) => {
+export const load: PageServerLoad = async ({ fetch, url, parent, depends }) => {
+	depends('app:subjects');
 	const { me } = await parent();
 	const subjectId = url.searchParams.get('subject');
 

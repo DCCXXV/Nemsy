@@ -115,3 +115,82 @@ func (q *Queries) ListSubjectsByStudy(ctx context.Context, studyID pgtype.Int4) 
 	}
 	return items, nil
 }
+
+const listSubjectsByStudyWithPinned = `-- name: ListSubjectsByStudyWithPinned :many
+SELECT s.id, s.study_id, s.name, s.year,
+       EXISTS(
+           SELECT 1 FROM pinned_subjects ps
+           WHERE ps.user_id = $2 AND ps.subject_id = s.id
+       ) AS pinned
+FROM subjects s
+WHERE s.study_id = $1
+ORDER BY s.year, s.name
+`
+
+type ListSubjectsByStudyWithPinnedParams struct {
+	StudyID pgtype.Int4
+	UserID  int32
+}
+
+type ListSubjectsByStudyWithPinnedRow struct {
+	ID      int32
+	StudyID pgtype.Int4
+	Name    string
+	Year    pgtype.Text
+	Pinned  bool
+}
+
+func (q *Queries) ListSubjectsByStudyWithPinned(ctx context.Context, arg ListSubjectsByStudyWithPinnedParams) ([]ListSubjectsByStudyWithPinnedRow, error) {
+	rows, err := q.db.Query(ctx, listSubjectsByStudyWithPinned, arg.StudyID, arg.UserID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListSubjectsByStudyWithPinnedRow
+	for rows.Next() {
+		var i ListSubjectsByStudyWithPinnedRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.StudyID,
+			&i.Name,
+			&i.Year,
+			&i.Pinned,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const pinSubject = `-- name: PinSubject :exec
+INSERT INTO pinned_subjects (user_id, subject_id)
+VALUES ($1, $2) ON CONFLICT DO NOTHING
+`
+
+type PinSubjectParams struct {
+	UserID    int32
+	SubjectID int32
+}
+
+func (q *Queries) PinSubject(ctx context.Context, arg PinSubjectParams) error {
+	_, err := q.db.Exec(ctx, pinSubject, arg.UserID, arg.SubjectID)
+	return err
+}
+
+const unpinSubject = `-- name: UnpinSubject :exec
+DELETE FROM pinned_subjects WHERE user_id = $1 AND subject_id = $2
+`
+
+type UnpinSubjectParams struct {
+	UserID    int32
+	SubjectID int32
+}
+
+func (q *Queries) UnpinSubject(ctx context.Context, arg UnpinSubjectParams) error {
+	_, err := q.db.Exec(ctx, unpinSubject, arg.UserID, arg.SubjectID)
+	return err
+}

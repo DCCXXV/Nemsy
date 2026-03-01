@@ -33,6 +33,9 @@ type Querier interface {
 	ListStudies(ctx context.Context) ([]Study, error)
 	ListSubjects(ctx context.Context) ([]Subject, error)
 	ListSubjectsByStudy(ctx context.Context, studyID pgtype.Int4) ([]Subject, error)
+	ListSubjectsByStudyWithPinned(ctx context.Context, arg ListSubjectsByStudyWithPinnedParams) ([]ListSubjectsByStudyWithPinnedRow, error)
+	PinSubject(ctx context.Context, arg PinSubjectParams) error
+	UnpinSubject(ctx context.Context, arg UnpinSubjectParams) error
 	UpdateUserStudy(ctx context.Context, arg UpdateUserStudyParams) (User, error)
 }
 

@@ -5,10 +5,9 @@
 	import { Tabs } from 'bits-ui';
 	import type { Subject } from '$lib/types';
 	import { page } from '$app/state';
-	import { goto } from '$app/navigation';
+	import { goto, invalidate } from '$app/navigation';
 	import { onMount, untrack } from 'svelte';
 
-	import { Toggle } from 'melt/components';
 	import { Tooltip } from 'melt/components';
 
 	import DownloadSimpleIcon from 'phosphor-svelte/lib/DownloadSimpleIcon';
@@ -94,6 +93,36 @@
 		if (sentinel) observer.observe(sentinel);
 		return () => observer.disconnect();
 	});
+
+	let localPinOverrides = $state(new Map<number, boolean>());
+
+	const pinnedIds = $derived(
+		new Set(
+			data.subjects
+				.filter((s) =>
+					localPinOverrides.has(s.id) ? localPinOverrides.get(s.id)! : (s.pinned ?? false)
+				)
+				.map((s) => s.id)
+		)
+	);
+	const pinnedSubjects = $derived(data.subjects.filter((s) => pinnedIds.has(s.id)));
+
+	async function togglePin(subjectId: number) {
+		const wasPinned = pinnedIds.has(subjectId);
+		localPinOverrides.set(subjectId, !wasPinned);
+
+		const method = wasPinned ? 'DELETE' : 'POST';
+		const res = await fetch(`${PUBLIC_API_BASE_URL}/api/me/subjects/${subjectId}/pin`, {
+			method,
+			credentials: 'include'
+		});
+		if (!res.ok) {
+			localPinOverrides.set(subjectId, wasPinned);
+		} else {
+			await invalidate('app:subjects');
+			localPinOverrides.delete(subjectId);
+		}
+	}
 
 	const subjectsByYear = $derived(
 		data.subjects.reduce(
@@ -184,9 +213,24 @@
 								<div class="max-h-[calc(50vh-2rem)] overflow-auto">
 									<ul class="pt-2">
 										{#if id === 'Fijadas'}
-											<li class="text-zinc-500 py-2 px-2">
-												No has fijado ninguna asignatura todavía
-											</li>
+											{#if pinnedSubjects.length}
+												{#each pinnedSubjects as subject (subject.id)}
+													<a
+														href="?subject={subject.id}"
+														onclick={() => selectSubject(subject.id.toString())}
+														class="block rounded-none py-2 px-2 mb-2 border cursor-pointer
+													{selectedSubject?.name == subject?.name
+															? 'bg-lime-200 border-lime-200 text-lime-800'
+															: 'text-zinc-700 bg-zinc-50 hover:bg-zinc-100 border-zinc-50 hover:border-zinc-200'}"
+													>
+														{subject.name}
+													</a>
+												{/each}
+											{:else}
+												<li class="text-zinc-500 py-2 px-2">
+													No has fijado ninguna asignatura todavía
+												</li>
+											{/if}
 										{:else if subjectsByYear[id]?.length}
 											{#each subjectsByYear[id] as subject (subject.id)}
 												<a
@@ -220,35 +264,33 @@
 						{selectedSubject ? selectedSubject.name : 'Fijadas'}
 					</h1>
 
-					<Tooltip>
-						{#snippet children(tooltip)}
-							<span {...tooltip.trigger}>
-								<Toggle>
-									{#snippet children(toggle)}
-										<button
-											{...toggle.trigger}
-											class="flex items-center justify-center cursor-pointer"
-										>
-											{#if toggle.value}
-												<PushPinIcon weight="fill" class="size-6 text-red-400" />
-											{:else}
-												<PushPinIcon
-													weight="regular"
-													class="size-6 text-zinc-500 hover:text-zinc-900"
-												/>
-											{/if}
-										</button>
-									{/snippet}
-								</Toggle>
-							</span>
-							<div {...tooltip.content}>
-								<div {...tooltip.arrow}></div>
-								<p class="border border-zinc-300 bg-zinc-50 p-2 text-zinc-500 rounded-none">
-									Fijar Asignatura
-								</p>
-							</div>
-						{/snippet}
-					</Tooltip>
+					{#if selectedSubject}
+						<Tooltip openDelay={250}>
+							{#snippet children(tooltip)}
+								<span {...tooltip.trigger}>
+									<button
+										onclick={() => togglePin(selectedSubject.id)}
+										class="flex items-center justify-center cursor-pointer"
+									>
+										{#if pinnedIds.has(selectedSubject.id)}
+											<PushPinIcon weight="fill" class="size-6 text-red-400" />
+										{:else}
+											<PushPinIcon
+												weight="regular"
+												class="size-6 text-zinc-500 hover:text-zinc-900"
+											/>
+										{/if}
+									</button>
+								</span>
+								<div {...tooltip.content}>
+									<div {...tooltip.arrow}></div>
+									<p class="border border-zinc-300 bg-zinc-50 p-2 text-zinc-500 rounded-none">
+										Fijar Asignatura
+									</p>
+								</div>
+							{/snippet}
+						</Tooltip>
+					{/if}
 				</div>
 				<div class="bg-zinc-100 border-b border-zinc-300 flex items-center py-1 justify-end">
 					<div class="text-zinc-500 bg-zinc-100 border-l border-zinc-300">
